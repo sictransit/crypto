@@ -35,12 +35,12 @@ namespace net.sictransit.crypto.enigma
         {
             var doubleStep = Upstream.EncoderType == EncoderType.Rotor && Downstream.EncoderType == EncoderType.Rotor;
 
-            if (turn || doubleStep && position == turnOver)
+            if (turn || doubleStep && PositionChar == turnOver)
             {
                 position = (position + 1) % 26;
             }
 
-            base.Tick(position == turnOver);
+            base.Tick(PositionChar == turnOver);
         }
 
         public override void SetUpstreamChar(char c)
@@ -54,14 +54,14 @@ namespace net.sictransit.crypto.enigma
 
             var upChar = upWiring[actual];
 
-            char foo = (char)(upChar - position);
+            upChar = (char)(upChar - position);
 
-            if (foo < 'A')
+            if (upChar < 'A')
             {
-                foo = (char)(foo + 26);
+                upChar = (char)(upChar + 26);
             }
 
-            base.SetUpstreamChar(foo);
+            base.SetUpstreamChar(upChar);
         }
 
         protected override void SetDownstreamChar(char c)

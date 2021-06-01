@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -8,7 +9,7 @@ namespace net.sictransit.crypto.enigma
     {
         public static void Main(string[] args)
         {
-            Logging.EnableLogging(Serilog.Events.LogEventLevel.Debug);
+            Logging.EnableLogging(Serilog.Events.LogEventLevel.Information);
 
             var plugBoard = new PlugBoard();
 
@@ -20,6 +21,8 @@ namespace net.sictransit.crypto.enigma
 
             var s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+            var sb = new StringBuilder();
+
             foreach (var c in s.ToCharArray())
             {
                 machine.Type(c);
@@ -29,8 +32,12 @@ namespace net.sictransit.crypto.enigma
                     Log.Debug(rotor.ToString());
                 }
 
-                Console.Write(machine.Display);
-            }            
+                sb.Append(machine.Display);
+            }
+
+            Log.Information("fuvepumwarvqkefghgdijfmfxi".ToUpper());
+
+            Log.Information(sb.ToString());
         }
     }
 }
