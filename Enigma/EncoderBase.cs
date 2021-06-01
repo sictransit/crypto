@@ -8,10 +8,14 @@
 
         public abstract EncoderType EncoderType { get; }
 
+        public char UpstreamChar { get; private set; }
+
         public char DownstreamChar { get; private set; }
 
         public virtual void SetUpstreamChar(char c)
         {
+            UpstreamChar = c;
+
             Upstream?.SetUpstreamChar(c);
         }
 
@@ -32,6 +36,11 @@
         public virtual void Tick(bool turn = false)
         {
             Upstream?.Tick(turn);
+        }
+
+        public override string ToString()
+        {
+            return $"{EncoderType}";
         }
     }
 }

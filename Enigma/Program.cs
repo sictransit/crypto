@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Serilog;
+using System;
+using System.Linq;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -6,28 +8,29 @@ namespace net.sictransit.crypto.enigma
     {
         public static void Main(string[] args)
         {
+            Logging.EnableLogging(Serilog.Events.LogEventLevel.Debug);
+
             var plugBoard = new PlugBoard();
 
-            //I   = EKMFLGDQVZNTOWYHXUSPAIBRCJ
-            //II  = AJDKSIRUXBLHWTMCQGZNPYFVOE
-            //III = BDFHJLCPRTXVZNYEIWGAKMUSQO
-            //IV  = ESOVPZJAYQUIRHXLNFTGKDCMWB
-            //V   = VZBRGITYUPSDNHLXAWMJQOFECK
+            var reflector = Box.SelectReflector(ReflectorType.UKW_B);
 
-            var rI = new Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", 0);
-            var rII = new Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", 0);
-            var rIII = new Rotor("BDFHJLCPRTXVZNYEIWGAKMUSQO", 0);
+            var rotors = new[] { RotorType.I, RotorType.II, RotorType.III }.Select(x => Box.SelectRotor(x)).ToArray();
 
-            //Reflector B = YRUHQSLDPXNGOKMIEBFZCWVJAT
-            //Reflector C = FVPJIAOYEDRZXWGCTKUQSBNMHL
+            var machine = new Enigma(plugBoard, rotors, reflector);
 
-            var reflector = new Reflector("FVPJIAOYEDRZXWGCTKUQSBNMHL");
+            var s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-            var machine = new Enigma(plugBoard, new[] { rI, rII, rIII }, reflector);
+            foreach (var c in s.ToCharArray())
+            {
+                machine.Type(c);
 
-            machine.Type('A');
+                foreach (var rotor in rotors)
+                {
+                    Log.Debug(rotor.ToString());
+                }
 
-            Console.Write(machine.Display);
+                Console.Write(machine.Display);
+            }            
         }
     }
 }
