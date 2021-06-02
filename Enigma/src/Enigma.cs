@@ -8,6 +8,7 @@ namespace net.sictransit.crypto.enigma
     public class Enigma
     {
         private readonly Keyboard keyboard = new();
+        private char[] startPositions;
 
         public Enigma(PlugBoard plugBoard, Rotor[] rotors, Reflector reflector)
         {
@@ -23,13 +24,29 @@ namespace net.sictransit.crypto.enigma
             }
 
             rotors[^1].Attach(reflector);
+
+            startPositions = rotors.Select(x => x.Position).ToArray();
+        }
+
+        public void SetStartPositions(char[] positions)
+        {
+            if (positions == null) throw new ArgumentNullException(nameof(positions));
+
+            if (positions.Length != Rotors.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(positions));
+            }
+
+            startPositions = positions;
+
+            Reset();
         }
 
         public void Reset()
         {
-            foreach (var rotor in Rotors)
+            for (var i = 0; i < startPositions.Length; i++)
             {
-                rotor.SetPoistion('A');
+                Rotors[i].SetPosition(startPositions[i]);
             }
         }
 

@@ -4,15 +4,15 @@ namespace net.sictransit.crypto.enigma
 {
     public static class Box
     {
-        public static Rotor SelectRotor(RotorType type)
+        public static Rotor SelectRotor(RotorType type, int ringSetting = 1)
         {
             return type switch
             {
-                RotorType.I => new Rotor(type.ToString(), "EKMFLGDQVZNTOWYHXUSPAIBRCJ", 'Y', 'Q'),
-                RotorType.II => new Rotor(type.ToString(), "AJDKSIRUXBLHWTMCQGZNPYFVOE", 'M', 'E'),
-                RotorType.III => new Rotor(type.ToString(), "BDFHJLCPRTXVZNYEIWGAKMUSQO", 'D', 'V'),
-                RotorType.IV => new Rotor(type.ToString(), "ESOVPZJAYQUIRHXLNFTGKDCMWB", 'R', 'J'),
-                RotorType.V => new Rotor(type.ToString(), "VZBRGITYUPSDNHLXAWMJQOFECK", 'H', 'Z'),
+                RotorType.I => new Rotor(type.ToString(), "EKMFLGDQVZNTOWYHXUSPAIBRCJ", 'Y', 'Q', ringSetting),
+                RotorType.II => new Rotor(type.ToString(), "AJDKSIRUXBLHWTMCQGZNPYFVOE", 'M', 'E', ringSetting),
+                RotorType.III => new Rotor(type.ToString(), "BDFHJLCPRTXVZNYEIWGAKMUSQO", 'D', 'V', ringSetting),
+                RotorType.IV => new Rotor(type.ToString(), "ESOVPZJAYQUIRHXLNFTGKDCMWB", 'R', 'J', ringSetting),
+                RotorType.V => new Rotor(type.ToString(), "VZBRGITYUPSDNHLXAWMJQOFECK", 'H', 'Z', ringSetting),
                 _ => throw new NotImplementedException(),
             };
         }

@@ -10,9 +10,10 @@ namespace net.sictransit.crypto.enigma
         private readonly Dictionary<char, char> upWiring = new();
         private readonly char notch;
         private readonly char turnOver;
+        private readonly int ringSetting;
         private int position;
 
-        public Rotor(string name, string wiring, char notch, char turnOver)
+        public Rotor(string name, string wiring, char notch, char turnOver, int ringSetting)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
@@ -26,27 +27,26 @@ namespace net.sictransit.crypto.enigma
 
             this.notch = notch;
             this.turnOver = turnOver;
+            this.ringSetting = ringSetting;
         }
 
-        public void SetPoistion(char p)
+        public void SetPosition(char p)
         {
             position = p - 'A';
         }
 
-        private char PositionChar => (char)('A' + position);
+        public char Position => (char)('A' + position);
 
         public override void Tick(bool turn = false)
         {
-            base.Tick(PositionChar == turnOver);
+            base.Tick(Position == turnOver);
 
             var doubleStep = Upstream.EncoderType == EncoderType.Rotor && Downstream.EncoderType == EncoderType.Rotor;
 
-            if (turn || doubleStep && PositionChar == turnOver)
+            if (turn || doubleStep && Position == turnOver)
             {
                 position = (position + 1) % 26;
             }
-
-
         }
 
         public override void SetUpstreamChar(char c)
@@ -65,6 +65,13 @@ namespace net.sictransit.crypto.enigma
             if (upChar < 'A')
             {
                 upChar = (char)(upChar + 26);
+            }
+
+            upChar = (char) (upChar + ringSetting - 1);
+
+            if (upChar > 'Z')
+            {
+                upChar = (char)(upChar - 26);
             }
 
             base.SetUpstreamChar(upChar);
@@ -96,7 +103,7 @@ namespace net.sictransit.crypto.enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} {name} {PositionChar} {UpstreamChar}->{DownstreamChar}";
+            return $"{base.ToString()} {name} {Position} {UpstreamChar}->{DownstreamChar}";
         }
     }
 }
