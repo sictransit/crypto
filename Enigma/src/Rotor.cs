@@ -67,12 +67,12 @@ namespace net.sictransit.crypto.enigma
                 upChar = (char)(upChar + 26);
             }
 
-            upChar = (char) (upChar + ringSetting - 1);
+            //upChar = (char) (upChar + ringSetting - 1);
 
-            if (upChar > 'Z')
-            {
-                upChar = (char)(upChar - 26);
-            }
+            //if (upChar > 'Z')
+            //{
+            //    upChar = (char)(upChar - 26);
+            //}
 
             base.SetUpstreamChar(upChar);
         }

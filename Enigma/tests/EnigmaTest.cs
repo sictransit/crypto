@@ -11,6 +11,11 @@ namespace net.sictransit.crypto.enigma.tests
             return CreateEnigma(new[] {RotorType.I, RotorType.II, RotorType.III}, new[] {1, 1, 1}, ReflectorType.UKW_B);
         }
 
+        private static Enigma CreateEnigma(int[] ringSettings)
+        {
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, ringSettings, ReflectorType.UKW_B);
+        }
+
         private static Enigma CreateEnigma(RotorType[] rotorTypes,  ReflectorType reflectorType)
         {
             return CreateEnigma(rotorTypes, new[] { 1, 1, 1 }, reflectorType);
@@ -89,5 +94,19 @@ namespace net.sictransit.crypto.enigma.tests
             Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
         }
 
+        [TestMethod]
+        public void TestRingSettings()
+        {
+            var enigma = CreateEnigma(new[] {1, 2, 3});
+
+            const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string cipherText = "CAHZZUIFVTNDVZGJOKPXLUUNOD";
+
+            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+
+            enigma.Reset();
+
+            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+        }
     }
 }
