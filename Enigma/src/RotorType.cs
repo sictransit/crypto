@@ -1,6 +1,6 @@
 ﻿namespace net.sictransit.crypto.enigma
 {
-    internal enum RotorType
+    public enum RotorType
     {
         I,
         II,

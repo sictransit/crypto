@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace net.sictransit.crypto.enigma
 {
-    internal static class Box
+    public static class Box
     {
         public static Rotor SelectRotor(RotorType type)
         {

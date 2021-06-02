@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace net.sictransit.crypto.enigma
 {
-    internal class Reflector : EncoderBase
+    public class Reflector : EncoderBase
     {
         private readonly Dictionary<char, char> wires = new();
 

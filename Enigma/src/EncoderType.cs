@@ -1,6 +1,6 @@
 ﻿namespace net.sictransit.crypto.enigma
 {
-    internal enum EncoderType
+    public enum EncoderType
     {
         Keyboard,
         PlugBoard,

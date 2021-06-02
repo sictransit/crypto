@@ -23,7 +23,7 @@ namespace net.sictransit.crypto.enigma
 
             var sb = new StringBuilder();
 
-            foreach (var c in s.ToCharArray())
+            foreach (var c in s)
             {
                 machine.Type(c);
 

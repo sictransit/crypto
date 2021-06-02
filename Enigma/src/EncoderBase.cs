@@ -1,6 +1,6 @@
 ﻿namespace net.sictransit.crypto.enigma
 {
-    internal abstract class EncoderBase
+    public abstract class EncoderBase
     {
         protected EncoderBase Upstream { get; private set; }
 

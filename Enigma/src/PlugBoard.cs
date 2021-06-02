@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace net.sictransit.crypto.enigma
 {
-    internal class PlugBoard : EncoderBase
+    public class PlugBoard : EncoderBase
     {
         private readonly Dictionary<char, char> wires = new();
 

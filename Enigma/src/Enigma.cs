@@ -1,6 +1,6 @@
 ﻿namespace net.sictransit.crypto.enigma
 {
-    internal class Enigma
+    public class Enigma
     {
         private readonly Keyboard keyboard = new();
 

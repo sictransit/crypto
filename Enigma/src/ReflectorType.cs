@@ -1,6 +1,6 @@
 ﻿namespace net.sictransit.crypto.enigma
 {
-    internal enum ReflectorType
+    public enum ReflectorType
     {
         UKW_A,
         UKW_B,

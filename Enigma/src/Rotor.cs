@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace net.sictransit.crypto.enigma
 {
-    internal class Rotor : EncoderBase
+    public class Rotor : EncoderBase
     {
         private readonly string name;
         private readonly Dictionary<char, char> downWiring = new();
