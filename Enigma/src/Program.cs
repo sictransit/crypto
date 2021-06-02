@@ -1,5 +1,4 @@
 ﻿using Serilog;
-using System;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +14,7 @@ namespace net.sictransit.crypto.enigma
 
             var reflector = Box.SelectReflector(ReflectorType.UKW_B);
 
-            var rotors = new[] { RotorType.I, RotorType.II, RotorType.III }.Select(x => Box.SelectRotor(x)).ToArray();
+            var rotors = new[] { RotorType.I, RotorType.II, RotorType.III }.Select(Box.SelectRotor).ToArray();
 
             var machine = new Enigma(plugBoard, rotors, reflector);
 

@@ -1,4 +1,6 @@
-﻿namespace net.sictransit.crypto.enigma
+﻿using System.Collections.Generic;
+
+namespace net.sictransit.crypto.enigma
 {
     public class Enigma
     {
@@ -19,6 +21,16 @@
         }
 
         public char Display { get; private set; }
+
+        public IEnumerable<char> Type(IEnumerable<char> chars)
+        {
+            foreach (var c in chars)
+            {
+                Type(c);
+
+                yield return Display;
+            }
+        }
 
         public void Type(char c)
         {

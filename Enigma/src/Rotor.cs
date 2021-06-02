@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -11,7 +10,7 @@ namespace net.sictransit.crypto.enigma
         private readonly Dictionary<char, char> upWiring = new();
         private readonly char notch;
         private readonly char turnOver;
-        private int position = 0;
+        private int position;
 
         public Rotor(string name, string wiring, char notch, char turnOver)
         {
@@ -19,7 +18,7 @@ namespace net.sictransit.crypto.enigma
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
             this.name = name ?? throw new ArgumentNullException(nameof(name));
 
-            for (int i = 0; i < wiring.Length; i++)
+            for (var i = 0; i < wiring.Length; i++)
             {
                 upWiring.Add((char)('A' + i), wiring[i]);
                 downWiring.Add(wiring[i], (char)('A' + i));
@@ -29,10 +28,12 @@ namespace net.sictransit.crypto.enigma
             this.turnOver = turnOver;
         }
 
-        public char PositionChar => (char)('A' + position);
+        private char PositionChar => (char)('A' + position);
 
         public override void Tick(bool turn = false)
         {
+            base.Tick(PositionChar == turnOver);
+
             var doubleStep = Upstream.EncoderType == EncoderType.Rotor && Downstream.EncoderType == EncoderType.Rotor;
 
             if (turn || doubleStep && PositionChar == turnOver)
@@ -40,12 +41,12 @@ namespace net.sictransit.crypto.enigma
                 position = (position + 1) % 26;
             }
 
-            base.Tick(PositionChar == turnOver);
+
         }
 
         public override void SetUpstreamChar(char c)
         {
-            char actual = (char)(c + position);
+            var actual = (char)(c + position);
 
             if (actual > 'Z')
             {
@@ -66,7 +67,7 @@ namespace net.sictransit.crypto.enigma
 
         protected override void SetDownstreamChar(char c)
         {
-            char actual = (char)(c + position);
+            var actual = (char)(c + position);
 
             if (actual > 'Z')
             {
@@ -79,7 +80,7 @@ namespace net.sictransit.crypto.enigma
 
             if (downChar < 'A')
             {
-                downChar = (char)(downChar +  26);
+                downChar = (char)(downChar + 26);
             }
 
             base.SetDownstreamChar(downChar);

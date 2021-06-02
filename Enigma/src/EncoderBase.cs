@@ -8,7 +8,7 @@
 
         public abstract EncoderType EncoderType { get; }
 
-        public char UpstreamChar { get; private set; }
+        protected char UpstreamChar { get; private set; }
 
         public char DownstreamChar { get; private set; }
 
