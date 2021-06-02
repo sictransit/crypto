@@ -1,4 +1,5 @@
-﻿using System;
+﻿using net.sictransit.crypto.enigma.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace net.sictransit.crypto.enigma

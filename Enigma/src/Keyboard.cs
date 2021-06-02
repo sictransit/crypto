@@ -1,4 +1,6 @@
-﻿namespace net.sictransit.crypto.enigma
+﻿using net.sictransit.crypto.enigma.Enums;
+
+namespace net.sictransit.crypto.enigma
 {
     internal class Keyboard : EncoderBase
     {

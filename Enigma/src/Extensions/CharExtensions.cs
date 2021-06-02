@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace net.sictransit.crypto.enigma.Extensions
 {
@@ -17,7 +16,7 @@ namespace net.sictransit.crypto.enigma.Extensions
 
         public static string ToEnigmaText(this string s)
         {
-            return new string(s.ToUpperInvariant().Where(c => c >= 'A' && c <= 'Z').ToArray());
+            return new(s.ToUpperInvariant().Where(c => c >= 'A' && c <= 'Z').ToArray());
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
+using net.sictransit.crypto.enigma.Enums;
 using net.sictransit.crypto.enigma.Extensions;
+using System.Linq;
 
 namespace net.sictransit.crypto.enigma.tests
 {
@@ -10,6 +11,11 @@ namespace net.sictransit.crypto.enigma.tests
         private static Enigma CreateEnigma()
         {
             return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.UKW_B);
+        }
+
+        private static Enigma CreateEnigma(PlugBoard plugBoard)
+        {
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.UKW_B, plugBoard);
         }
 
         private static Enigma CreateEnigma(int[] ringSettings)
@@ -22,16 +28,31 @@ namespace net.sictransit.crypto.enigma.tests
             return CreateEnigma(rotorTypes, new[] { 1, 1, 1 }, reflectorType);
         }
 
-        private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType)
+        private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, PlugBoard plugBoard = null)
         {
-            var plugBoard = new PlugBoard();
-
             var reflector = Box.SelectReflector(reflectorType);
 
             var rotors = rotorTypes.Select((t, i) => Box.SelectRotor(t, ringSettings[i])).ToArray();
 
-            return new Enigma(plugBoard, rotors, reflector);
+            return new Enigma(plugBoard ?? new PlugBoard(), rotors, reflector);
         }
+
+        [TestMethod]
+        public void TestTyping()
+        {
+            var enigma = CreateEnigma();
+
+            const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXI";
+
+            for (var i = 0; i < clearText.Length; i++)
+            {
+                enigma.Type(clearText[i]);
+
+                Assert.AreEqual(cipherText[i], enigma.Display);
+            }
+        }
+
 
         [TestMethod]
         public void TestKnownCipherTextB321()
@@ -130,6 +151,23 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
             enigma.Reset();
 
             Assert.AreEqual(clearText.ToEnigmaText(), new string(enigma.Type(cipherText).ToArray()));
+        }
+
+        [TestMethod]
+        public void TestPlugBoard()
+        {
+            var plugBoard = new PlugBoard(new[] { ('A', 'Z'), ('M', 'N') });
+
+            var enigma = CreateEnigma(plugBoard);
+
+            const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var cipherText = "tuvep unwzr vqwvf ghgdi jfnfx d".ToEnigmaText();
+
+            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+
+            enigma.Reset();
+
+            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
         }
     }
 }

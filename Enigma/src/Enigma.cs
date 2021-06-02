@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using net.sictransit.crypto.enigma.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,13 @@ namespace net.sictransit.crypto.enigma
     public class Enigma
     {
         private readonly Keyboard keyboard = new();
+        private readonly Rotor[] rotors;
+
         private char[] startPositions;
 
         public Enigma(PlugBoard plugBoard, Rotor[] rotors, Reflector reflector)
         {
-            Rotors = rotors;
+            this.rotors = rotors;
 
             keyboard.Attach(plugBoard);
 
@@ -32,7 +35,7 @@ namespace net.sictransit.crypto.enigma
         {
             if (positions == null) throw new ArgumentNullException(nameof(positions));
 
-            if (positions.Length != Rotors.Length)
+            if (positions.Length != rotors.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(positions));
             }
@@ -46,11 +49,9 @@ namespace net.sictransit.crypto.enigma
         {
             for (var i = 0; i < startPositions.Length; i++)
             {
-                Rotors[i].SetPosition(startPositions[i]);
+                rotors[i].SetPosition(startPositions[i]);
             }
         }
-
-        public Rotor[] Rotors { get; }
 
         public char Display => keyboard.ReverseChar;
 

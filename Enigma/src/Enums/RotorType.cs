@@ -1,4 +1,4 @@
-﻿namespace net.sictransit.crypto.enigma
+﻿namespace net.sictransit.crypto.enigma.Enums
 {
     public enum RotorType
     {
