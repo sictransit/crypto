@@ -9,13 +9,17 @@ namespace net.sictransit.crypto.enigma
     public class Enigma
     {
         private readonly Keyboard keyboard = new();
+        private readonly PlugBoard plugBoard;
         private readonly Rotor[] rotors;
+        private readonly Reflector reflector;
 
         private char[] startPositions;
 
         public Enigma(PlugBoard plugBoard, Rotor[] rotors, Reflector reflector)
         {
-            this.rotors = rotors;
+            this.plugBoard = plugBoard ?? throw new ArgumentNullException(nameof(plugBoard));
+            this.rotors = rotors ?? throw new ArgumentNullException(nameof(rotors));
+            this.reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
 
             keyboard.Attach(plugBoard);
 
@@ -78,9 +82,16 @@ namespace net.sictransit.crypto.enigma
                 return true;
             }
 
-            Log.Debug("types unsupported character: {c}");
+            Log.Debug($"types unsupported character: {c}");
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            var r = string.Join(" - ", rotors.Select((x, i) => $"{x} p0={startPositions[i]}").Reverse());
+
+            return $"{reflector} - {r} - {plugBoard}";
         }
     }
 }

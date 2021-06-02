@@ -1,7 +1,6 @@
 ﻿using net.sictransit.crypto.enigma.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -9,18 +8,16 @@ namespace net.sictransit.crypto.enigma
     {
         private readonly Dictionary<char, char> wires = new();
 
-        public PlugBoard() : this(Enumerable.Empty<(char, char)>())
-        {
-        }
+        private readonly string wiring;
 
-        public PlugBoard(IEnumerable<(char, char)> wiring)
+        public PlugBoard(string wiring = null)
         {
-            if (wiring == null) throw new ArgumentNullException(nameof(wiring));
+            this.wiring = wiring ?? string.Empty;
 
-            foreach (var (from, to) in wiring)
+            foreach (var wire in this.wiring.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             {
-                wires.Add(from, to);
-                wires.Add(to, from);
+                wires.Add(wire[0], wire[1]);
+                wires.Add(wire[1], wire[0]);
             }
         }
 
@@ -34,6 +31,11 @@ namespace net.sictransit.crypto.enigma
         public override void Transpose(char c, Direction direction)
         {
             base.Transpose(Translate(c), direction);
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()} wiring={wiring}";
         }
     }
 }

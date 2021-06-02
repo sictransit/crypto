@@ -30,9 +30,9 @@ namespace net.sictransit.crypto.enigma.tests
 
         private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, PlugBoard plugBoard = null)
         {
-            var reflector = Box.SelectReflector(reflectorType);
+            var reflector = GearBox.SelectReflector(reflectorType);
 
-            var rotors = rotorTypes.Select((t, i) => Box.SelectRotor(t, ringSettings[i])).ToArray();
+            var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
 
             return new Enigma(plugBoard ?? new PlugBoard(), rotors, reflector);
         }
@@ -156,7 +156,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestPlugBoard()
         {
-            var plugBoard = new PlugBoard(new[] { ('A', 'Z'), ('M', 'N') });
+            var plugBoard = new PlugBoard("AZ MN");
 
             var enigma = CreateEnigma(plugBoard);
 

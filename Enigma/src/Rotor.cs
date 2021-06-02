@@ -7,7 +7,6 @@ namespace net.sictransit.crypto.enigma
 {
     public class Rotor : EncoderBase
     {
-        private readonly string name;
         private readonly Dictionary<char, char> forwardWiring = new();
         private readonly Dictionary<char, char> reverseWiring = new();
         private readonly char turnOver;
@@ -18,7 +17,8 @@ namespace net.sictransit.crypto.enigma
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
-            this.name = name ?? throw new ArgumentNullException(nameof(name));
+
+            Name = name ?? throw new ArgumentNullException(nameof(name));
 
             for (var i = 0; i < wiring.Length; i++)
             {
@@ -29,6 +29,10 @@ namespace net.sictransit.crypto.enigma
             this.turnOver = turnOver;
             this.ringSetting = ringSetting;
         }
+
+        public string Name { get; }
+
+        private char RingSetting => (char)('A' + ringSetting - 1);
 
         public void SetPosition(char p)
         {
@@ -70,7 +74,7 @@ namespace net.sictransit.crypto.enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} {name} {Position} {ForwardChar}->{ReverseChar}";
+            return $"{base.ToString()} {Name} rs={RingSetting}";
         }
     }
 }

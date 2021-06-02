@@ -3,7 +3,7 @@ using System;
 
 namespace net.sictransit.crypto.enigma
 {
-    public static class Box
+    public static class GearBox
     {
         public static Rotor SelectRotor(RotorType type, int ringSetting = 1)
         {
@@ -22,9 +22,9 @@ namespace net.sictransit.crypto.enigma
         {
             return type switch
             {
-                ReflectorType.UKW_A => new Reflector("EJMZALYXVBWFCRQUONTSPIKHGD"),
-                ReflectorType.UKW_B => new Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT"),
-                ReflectorType.UKW_C => new Reflector("FVPJIAOYEDRZXWGCTKUQSBNMHL"),
+                ReflectorType.UKW_A => new Reflector(type.ToString(), "EJMZALYXVBWFCRQUONTSPIKHGD"),
+                ReflectorType.UKW_B => new Reflector(type.ToString(), "YRUHQSLDPXNGOKMIEBFZCWVJAT"),
+                ReflectorType.UKW_C => new Reflector(type.ToString(), "FVPJIAOYEDRZXWGCTKUQSBNMHL"),
                 _ => throw new NotImplementedException(),
             };
         }
