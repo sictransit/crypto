@@ -9,12 +9,12 @@ namespace net.SicTransit.Crypto.Enigma
     {
         private readonly Dictionary<char, char> wires = new();
 
-        public Reflector(string name, string wiring)
+        public Reflector(ReflectorType type, string wiring)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
 
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = type.ToString();
 
             for (var i = 0; i < 26; i++)
             {

@@ -15,7 +15,7 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly bool hasGearBox;
         private int position;
 
-        public Rotor(string name, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
+        public Rotor(RotorType type, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
@@ -23,7 +23,7 @@ namespace net.SicTransit.Crypto.Enigma
             this.notch = notch;
             this.ringSetting = ringSetting;
             this.hasGearBox = hasGearBox;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = type.ToString();
 
             for (var i = 0; i < wiring.Length; i++)
             {
@@ -56,21 +56,18 @@ namespace net.SicTransit.Crypto.Enigma
 
             if (turn || WillDoubleStep && IsNotched)
             {
-                position = (position + 1) % 26;
+                position++;
+                position %= 26;
             }
         }
 
         public override void Transpose(char c, Direction direction)
         {
-            var cIn = (char)(c + position - ringSetting + 1);
-
-            cIn = cIn.WrapAround();
+            var cIn = ((char)(c + position - ringSetting + 1)).WrapAround();
 
             var transposed = direction == Direction.Forward ? reverseWiring[cIn] : forwardWiring[cIn];
 
-            var cOut = (char)(transposed - position + ringSetting - 1);
-
-            cOut = cOut.WrapAround();
+            var cOut = ((char)(transposed - position + ringSetting - 1)).WrapAround();
 
             base.Transpose(cOut, direction);
         }

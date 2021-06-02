@@ -14,9 +14,9 @@ namespace net.SicTransit.Crypto.Enigma
 
             var plugBoard = new PlugBoard("EN IG MA");
             var ringSettings = new[] { 1, 7, 23 };
-            var rotors = new[] { RotorType.III, RotorType.V, RotorType.IV }.Select((x, i) => GearBox.SelectRotor(x, ringSettings[i])).ToArray();
+            var rotors = new[] { RotorType.III, RotorType.V, RotorType.IV }.Select((x, i) => GearBoxFactory.SelectRotor(x, ringSettings[i])).ToArray();
 
-            var enigma = new Enigma(plugBoard, rotors, GearBox.SelectReflector(ReflectorType.UKW_C));
+            var enigma = new Enigma(plugBoard, rotors, GearBoxFactory.SelectReflector(ReflectorType.UKW_C));
             enigma.SetStartPositions(new[] { 'A', 'L', 'N' });
 
             Log.Information($"settings: {enigma}");

@@ -30,9 +30,9 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
         private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, PlugBoard plugBoard = null)
         {
-            var reflector = GearBox.SelectReflector(reflectorType);
+            var reflector = GearBoxFactory.SelectReflector(reflectorType);
 
-            var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
+            var rotors = rotorTypes.Select((t, i) => GearBoxFactory.SelectRotor(t, ringSettings[i])).ToArray();
 
             return new Enigma(plugBoard ?? new PlugBoard(), rotors, reflector);
         }
