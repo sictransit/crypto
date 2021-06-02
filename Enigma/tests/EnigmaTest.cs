@@ -1,9 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using net.sictransit.crypto.enigma.Enums;
-using net.sictransit.crypto.enigma.Extensions;
+using net.SicTransit.Crypto.Enigma.Enums;
+using net.SicTransit.Crypto.Enigma.Extensions;
 using System.Linq;
 
-namespace net.sictransit.crypto.enigma.tests
+namespace net.SicTransit.Crypto.Enigma.Tests
 {
     [TestClass]
     public class EnigmaTest

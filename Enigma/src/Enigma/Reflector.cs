@@ -1,8 +1,9 @@
-﻿using net.sictransit.crypto.enigma.Enums;
+﻿using net.SicTransit.Crypto.Enigma.Abstract;
+using net.SicTransit.Crypto.Enigma.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma
 {
     public class Reflector : EncoderBase
     {
@@ -21,9 +22,9 @@ namespace net.sictransit.crypto.enigma
             }
         }
 
-        public string Name { get; }
-
         public override EncoderType EncoderType => EncoderType.Reflector;
+
+        public string Name { get; }
 
         public override void Transpose(char c, Direction direction)
         {

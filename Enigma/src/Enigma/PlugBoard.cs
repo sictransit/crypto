@@ -1,8 +1,9 @@
-﻿using net.sictransit.crypto.enigma.Enums;
+﻿using net.SicTransit.Crypto.Enigma.Abstract;
+using net.SicTransit.Crypto.Enigma.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma
 {
     public class PlugBoard : EncoderBase
     {
@@ -21,16 +22,13 @@ namespace net.sictransit.crypto.enigma
             }
         }
 
-        private char Translate(char c)
-        {
-            return wires.TryGetValue(c, out var t) ? t : c;
-        }
-
         public override EncoderType EncoderType => EncoderType.PlugBoard;
 
         public override void Transpose(char c, Direction direction)
         {
-            base.Transpose(Translate(c), direction);
+            var transposed = wires.TryGetValue(c, out var t) ? t : c;
+
+            base.Transpose(transposed, direction);
         }
 
         public override string ToString()

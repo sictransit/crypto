@@ -1,9 +1,9 @@
-﻿using net.sictransit.crypto.enigma.Enums;
-using net.sictransit.crypto.enigma.Extensions;
+﻿using net.SicTransit.Crypto.Enigma.Enums;
+using net.SicTransit.Crypto.Enigma.Extensions;
 using Serilog;
 using System.Linq;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma
 {
     public static class Program
     {

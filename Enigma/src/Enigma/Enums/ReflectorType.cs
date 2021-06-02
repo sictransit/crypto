@@ -1,4 +1,4 @@
-﻿namespace net.sictransit.crypto.enigma.Enums
+﻿namespace net.SicTransit.Crypto.Enigma.Enums
 {
     public enum ReflectorType
     {

@@ -1,10 +1,10 @@
-﻿using net.sictransit.crypto.enigma.Enums;
+﻿using net.SicTransit.Crypto.Enigma.Enums;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma
 {
     public class Enigma
     {

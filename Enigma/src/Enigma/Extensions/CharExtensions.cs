@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace net.sictransit.crypto.enigma.Extensions
+namespace net.SicTransit.Crypto.Enigma.Extensions
 {
     public static class CharExtensions
     {

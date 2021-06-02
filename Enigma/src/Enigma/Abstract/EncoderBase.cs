@@ -1,7 +1,7 @@
-﻿using net.sictransit.crypto.enigma.Enums;
+﻿using net.SicTransit.Crypto.Enigma.Enums;
 using System;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma.Abstract
 {
     public abstract class EncoderBase
     {

@@ -1,55 +1,60 @@
-﻿using net.sictransit.crypto.enigma.Enums;
-using net.sictransit.crypto.enigma.Extensions;
+﻿using net.SicTransit.Crypto.Enigma.Abstract;
+using net.SicTransit.Crypto.Enigma.Enums;
+using net.SicTransit.Crypto.Enigma.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace net.sictransit.crypto.enigma
+namespace net.SicTransit.Crypto.Enigma
 {
     public class Rotor : EncoderBase
     {
         private readonly Dictionary<char, char> forwardWiring = new();
         private readonly Dictionary<char, char> reverseWiring = new();
-        private readonly char turnOver;
+        private readonly char notch;
         private readonly int ringSetting;
+        private readonly bool hasGearBox;
         private int position;
 
-        public Rotor(string name, string wiring, char turnOver, int ringSetting)
+        public Rotor(string name, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
 
+            this.notch = notch;
+            this.ringSetting = ringSetting;
+            this.hasGearBox = hasGearBox;
             Name = name ?? throw new ArgumentNullException(nameof(name));
 
             for (var i = 0; i < wiring.Length; i++)
             {
-                reverseWiring.Add((char)('A' + i), wiring[i]);
-                forwardWiring.Add(wiring[i], (char)('A' + i));
+                var wiredTo = (char)('A' + i);
+                forwardWiring.Add(wiring[i], wiredTo);
+                reverseWiring.Add(wiredTo, wiring[i]);
             }
-
-            this.turnOver = turnOver;
-            this.ringSetting = ringSetting;
         }
+
+        public override EncoderType EncoderType => EncoderType.Rotor;
 
         public string Name { get; }
 
         private char RingSetting => (char)('A' + ringSetting - 1);
+
+        public char Position => (char)('A' + position);
+
+        private bool IsNotched => Position == notch;
+
+        private bool WillDoubleStep => !hasGearBox && NextEncoder.EncoderType == EncoderType.Rotor && PreviousEncoder.EncoderType == EncoderType.Rotor;
 
         public void SetPosition(char p)
         {
             position = p - 'A';
         }
 
-        public char Position => (char)('A' + position);
-
-        private bool IsNotched => Position == turnOver;
-
         public override void Tick(bool turn = false)
         {
             base.Tick(IsNotched);
 
-            var doubleStep = NextEncoder.EncoderType == EncoderType.Rotor && PreviousEncoder.EncoderType == EncoderType.Rotor;
-
-            if (turn || doubleStep && IsNotched)
+            if (turn || WillDoubleStep && IsNotched)
             {
                 position = (position + 1) % 26;
             }
@@ -69,8 +74,6 @@ namespace net.sictransit.crypto.enigma
 
             base.Transpose(cOut, direction);
         }
-
-        public override EncoderType EncoderType => EncoderType.Rotor;
 
         public override string ToString()
         {

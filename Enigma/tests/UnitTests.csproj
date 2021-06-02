@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>net.sictransit.crypto.enigma.tests</RootNamespace>
+    <RootNamespace>net.SicTransit.Crypto.Enigma.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Enigma.csproj" />
+    <ProjectReference Include="..\src\Enigma\Enigma.csproj" />
   </ItemGroup>
 
 </Project>
