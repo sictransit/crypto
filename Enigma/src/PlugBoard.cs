@@ -30,18 +30,9 @@ namespace net.sictransit.crypto.enigma
 
         public override EncoderType EncoderType => EncoderType.PlugBoard;
 
-        public override void SetUpstreamChar(char c)
+        public override void Transpose(char c, Direction direction)
         {
-            var translated = Translate(c);
-
-            base.SetUpstreamChar(translated);
-        }
-
-        protected override void SetDownstreamChar(char c)
-        {
-            var translated = Translate(c);
-
-            base.SetDownstreamChar(translated);
+            base.Transpose(Translate(c), direction);
         }
     }
 }

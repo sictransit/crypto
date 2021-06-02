@@ -1,35 +1,30 @@
-﻿using System;
+﻿using net.sictransit.crypto.enigma.Extensions;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using net.sictransit.crypto.enigma.Extensions;
 
 namespace net.sictransit.crypto.enigma
 {
     public class Rotor : EncoderBase
     {
         private readonly string name;
-        private readonly Dictionary<char, char> downWiring = new();
-        private readonly Dictionary<char, char> upWiring = new();
-        private readonly char notch;
+        private readonly Dictionary<char, char> forwardWiring = new();
+        private readonly Dictionary<char, char> reverseWiring = new();
         private readonly char turnOver;
         private readonly int ringSetting;
         private int position;
 
-        public Rotor(string name, string wiring, char notch, char turnOver, int ringSetting)
+        public Rotor(string name, string wiring, char turnOver, int ringSetting)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
             this.name = name ?? throw new ArgumentNullException(nameof(name));
 
-            var adjustedWiring = wiring.Skip(ringSetting - 1).Take(wiring.Length - ringSetting + 1).Concat(wiring.Take(ringSetting - 1)).ToArray();
-
-            for (var i = 0; i < adjustedWiring.Length; i++)
+            for (var i = 0; i < wiring.Length; i++)
             {
-                upWiring.Add((char)('A' + i), adjustedWiring[i]);
-                downWiring.Add(adjustedWiring[i], (char)('A' + i));
+                reverseWiring.Add((char)('A' + i), wiring[i]);
+                forwardWiring.Add(wiring[i], (char)('A' + i));
             }
 
-            this.notch = notch;
             this.turnOver = turnOver;
             this.ringSetting = ringSetting;
         }
@@ -41,50 +36,40 @@ namespace net.sictransit.crypto.enigma
 
         public char Position => (char)('A' + position);
 
+        private bool IsNotched => Position == turnOver;
+
         public override void Tick(bool turn = false)
         {
-            base.Tick(Position == turnOver);
+            base.Tick(IsNotched);
 
-            var doubleStep = Upstream.EncoderType == EncoderType.Rotor && Downstream.EncoderType == EncoderType.Rotor;
+            var doubleStep = NextEncoder.EncoderType == EncoderType.Rotor && PreviousEncoder.EncoderType == EncoderType.Rotor;
 
-            if (turn || doubleStep && Position == turnOver)
+            if (turn || doubleStep && IsNotched)
             {
                 position = (position + 1) % 26;
             }
         }
 
-        public override void SetUpstreamChar(char c)
+        public override void Transpose(char c, Direction direction)
         {
-            var cIn = (char)(c + position);
+            var cIn = (char)(c + position - ringSetting + 1);
 
             cIn = cIn.WrapAround();
 
-            var cOut = (char) (upWiring[cIn] - position);
+            var transposed = direction == Direction.Forward ? reverseWiring[cIn] : forwardWiring[cIn];
 
-            cOut = cOut.WrapAround();
-            
-            base.SetUpstreamChar(cOut);
-        }
-
-        protected override void SetDownstreamChar(char c)
-        {
-            var cIn = (char)(c + position);
-
-            cIn = cIn.WrapAround();
-
-            var cOut = (char) (downWiring[cIn] - position);
+            var cOut = (char)(transposed - position + ringSetting - 1);
 
             cOut = cOut.WrapAround();
 
-            base.SetDownstreamChar(cOut);
+            base.Transpose(cOut, direction);
         }
-
 
         public override EncoderType EncoderType => EncoderType.Rotor;
 
         public override string ToString()
         {
-            return $"{base.ToString()} {name} {Position} {UpstreamChar}->{DownstreamChar}";
+            return $"{base.ToString()} {name} {Position} {ForwardChar}->{ReverseChar}";
         }
     }
 }

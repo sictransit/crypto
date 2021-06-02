@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Serilog;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -52,7 +52,7 @@ namespace net.sictransit.crypto.enigma
 
         public Rotor[] Rotors { get; }
 
-        public char Display => keyboard.DownstreamChar;
+        public char Display => keyboard.ReverseChar;
 
         public IEnumerable<char> Type(IEnumerable<char> chars)
         {
@@ -72,7 +72,7 @@ namespace net.sictransit.crypto.enigma
             {
                 keyboard.Tick(true);
 
-                keyboard.SetUpstreamChar(input);
+                keyboard.Transpose(input, Direction.Forward);
 
                 return true;
             }

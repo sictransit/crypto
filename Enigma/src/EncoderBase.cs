@@ -1,41 +1,46 @@
-﻿namespace net.sictransit.crypto.enigma
+﻿using System;
+
+namespace net.sictransit.crypto.enigma
 {
     public abstract class EncoderBase
     {
-        protected EncoderBase Upstream { get; private set; }
+        protected EncoderBase NextEncoder { get; private set; }
 
-        protected EncoderBase Downstream { get; private set; }
+        protected EncoderBase PreviousEncoder { get; private set; }
 
         public abstract EncoderType EncoderType { get; }
 
-        protected char UpstreamChar { get; private set; }
+        protected char ForwardChar { get; set; }
 
-        public char DownstreamChar { get; private set; }
+        public char ReverseChar { get; private set; }
 
-        public virtual void SetUpstreamChar(char c)
+        public virtual void Transpose(char c, Direction direction)
         {
-            UpstreamChar = c;
-
-            Upstream?.SetUpstreamChar(c);
-        }
-
-        protected virtual void SetDownstreamChar(char c)
-        {
-            DownstreamChar = c;
-
-            Downstream?.SetDownstreamChar(c);
+            switch (direction)
+            {
+                case Direction.Forward:
+                    ForwardChar = c;
+                    NextEncoder?.Transpose(c, direction);
+                    break;
+                case Direction.Reverse:
+                    ReverseChar = c;
+                    PreviousEncoder?.Transpose(c, direction);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
         }
 
         public void Attach(EncoderBase e)
         {
-            Upstream = e;
+            NextEncoder = e;
 
-            e.Downstream = this;
+            e.PreviousEncoder = this;
         }
 
         public virtual void Tick(bool turn = false)
         {
-            Upstream?.Tick(turn);
+            NextEncoder?.Tick(turn);
         }
 
         public override string ToString()

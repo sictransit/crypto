@@ -20,13 +20,11 @@ namespace net.sictransit.crypto.enigma
 
         public override EncoderType EncoderType => EncoderType.Reflector;
 
-        public override void SetUpstreamChar(char c)
+        public override void Transpose(char c, Direction direction)
         {
-            base.SetUpstreamChar(c);
+            ForwardChar = c;
 
-            var reflected = wires[c];
-
-            SetDownstreamChar(reflected);
+            base.Transpose(wires[c], Direction.Reverse);
         }
     }
 }
