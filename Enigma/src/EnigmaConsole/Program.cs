@@ -1,6 +1,7 @@
 ﻿using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using Serilog;
+using System.Diagnostics;
 using System.Linq;
 
 namespace net.SicTransit.Crypto.Enigma
@@ -24,9 +25,15 @@ namespace net.SicTransit.Crypto.Enigma
 
             Log.Information($"cipher: {cipherText}");
 
+            var sw = new Stopwatch();
+
+            sw.Start();
+
             var clearText = enigma.Type(cipherText);
 
-            Log.Information($"clear: {new string(clearText.ToArray())}");
+            var elapsed = sw.Elapsed;
+
+            Log.Information($"clear: {new string(clearText.ToArray())} (time: {elapsed})");
         }
     }
 }
