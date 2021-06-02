@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using net.sictransit.crypto.enigma.Extensions;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -19,10 +21,12 @@ namespace net.sictransit.crypto.enigma
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
             this.name = name ?? throw new ArgumentNullException(nameof(name));
 
-            for (var i = 0; i < wiring.Length; i++)
+            var adjustedWiring = wiring.Skip(ringSetting - 1).Take(wiring.Length - ringSetting + 1).Concat(wiring.Take(ringSetting - 1)).ToArray();
+
+            for (var i = 0; i < adjustedWiring.Length; i++)
             {
-                upWiring.Add((char)('A' + i), wiring[i]);
-                downWiring.Add(wiring[i], (char)('A' + i));
+                upWiring.Add((char)('A' + i), adjustedWiring[i]);
+                downWiring.Add(adjustedWiring[i], (char)('A' + i));
             }
 
             this.notch = notch;
@@ -51,51 +55,28 @@ namespace net.sictransit.crypto.enigma
 
         public override void SetUpstreamChar(char c)
         {
-            var actual = (char)(c + position);
+            var cIn = (char)(c + position);
 
-            if (actual > 'Z')
-            {
-                actual = (char)(actual - 26);
-            }
+            cIn = cIn.WrapAround();
 
-            var upChar = upWiring[actual];
+            var cOut = (char) (upWiring[cIn] - position);
 
-            upChar = (char)(upChar - position);
-
-            if (upChar < 'A')
-            {
-                upChar = (char)(upChar + 26);
-            }
-
-            //upChar = (char) (upChar + ringSetting - 1);
-
-            //if (upChar > 'Z')
-            //{
-            //    upChar = (char)(upChar - 26);
-            //}
-
-            base.SetUpstreamChar(upChar);
+            cOut = cOut.WrapAround();
+            
+            base.SetUpstreamChar(cOut);
         }
 
         protected override void SetDownstreamChar(char c)
         {
-            var actual = (char)(c + position);
+            var cIn = (char)(c + position);
 
-            if (actual > 'Z')
-            {
-                actual = (char)(actual - 26);
-            }
+            cIn = cIn.WrapAround();
 
-            var downChar = downWiring[actual];
+            var cOut = (char) (downWiring[cIn] - position);
 
-            downChar = (char)(downChar - position);
+            cOut = cOut.WrapAround();
 
-            if (downChar < 'A')
-            {
-                downChar = (char)(downChar + 26);
-            }
-
-            base.SetDownstreamChar(downChar);
+            base.SetDownstreamChar(cOut);
         }
 
 
