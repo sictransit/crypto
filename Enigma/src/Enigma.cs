@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Serilog;
 
 namespace net.sictransit.crypto.enigma
 {
@@ -8,6 +11,8 @@ namespace net.sictransit.crypto.enigma
 
         public Enigma(PlugBoard plugBoard, Rotor[] rotors, Reflector reflector)
         {
+            Rotors = rotors;
+
             keyboard.Attach(plugBoard);
 
             plugBoard.Attach(rotors[0]);
@@ -20,25 +25,44 @@ namespace net.sictransit.crypto.enigma
             rotors[^1].Attach(reflector);
         }
 
-        public char Display { get; private set; }
+        public void Reset()
+        {
+            foreach (var rotor in Rotors)
+            {
+                rotor.SetPoistion('A');
+            }
+        }
+
+        public Rotor[] Rotors { get; }
+
+        public char Display => keyboard.DownstreamChar;
 
         public IEnumerable<char> Type(IEnumerable<char> chars)
         {
-            foreach (var c in chars)
-            {
-                Type(c);
-
-                yield return Display;
-            }
+            return from c in chars where TypeCharacter(c) select Display;
         }
 
         public void Type(char c)
         {
-            keyboard.Tick(true);
+            TypeCharacter(c);
+        }
 
-            keyboard.SetUpstreamChar(c);
+        private bool TypeCharacter(char c)
+        {
+            var input = char.ToUpper(c);
 
-            Display = keyboard.DownstreamChar;
+            if (input >= 'A' && input <= 'Z')
+            {
+                keyboard.Tick(true);
+
+                keyboard.SetUpstreamChar(input);
+
+                return true;
+            }
+
+            Log.Debug("types unsupported character: {c}");
+
+            return false;
         }
     }
 }

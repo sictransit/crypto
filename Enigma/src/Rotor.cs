@@ -28,6 +28,11 @@ namespace net.sictransit.crypto.enigma
             this.turnOver = turnOver;
         }
 
+        public void SetPoistion(char p)
+        {
+            position = p - 'A';
+        }
+
         private char PositionChar => (char)('A' + position);
 
         public override void Tick(bool turn = false)

@@ -6,53 +6,60 @@ namespace net.sictransit.crypto.enigma.tests
     [TestClass]
     public class EnigmaTest
     {
-        [TestMethod]
-        public void TestEncryptToKnownCipherTextB321()
+        private static Enigma CreateEnigma(RotorType[] rotorTypes, ReflectorType reflectorType)
         {
             var plugBoard = new PlugBoard();
 
-            var reflector = Box.SelectReflector(ReflectorType.UKW_B);
+            var reflector = Box.SelectReflector(reflectorType);
 
-            var rotors = new[] { RotorType.I, RotorType.II, RotorType.III }.Select(Box.SelectRotor).ToArray();
+            var rotors = rotorTypes.Select(Box.SelectRotor).ToArray();
 
-            var enigma = new Enigma(plugBoard, rotors, reflector);
-
-            var cipher = enigma.Type("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
-            Assert.AreEqual("FUVEPUMWARVQKEFGHGDIJFMFXI", new string(cipher.ToArray()));
+            return new Enigma(plugBoard, rotors, reflector);
         }
 
         [TestMethod]
-        public void TestEncryptToKnownCipherTextC543()
+        public void TestKnownCipherTextB321()
         {
-            var plugBoard = new PlugBoard();
+            var enigma = CreateEnigma(new[] {RotorType.I, RotorType.II, RotorType.III}, ReflectorType.UKW_B);
 
-            var reflector = Box.SelectReflector(ReflectorType.UKW_C);
+            const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXI";
 
-            var rotors = new[] { RotorType.III, RotorType.IV, RotorType.V }.Select(Box.SelectRotor).ToArray();
+            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
 
-            var enigma = new Enigma(plugBoard, rotors, reflector);
+            enigma.Reset();
 
-            var cipher = enigma.Type("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
-            Assert.AreEqual("SIBKMIAZDAWKVEAVCZEVOJADCC", new string(cipher.ToArray()));
+            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
         }
 
+        [TestMethod]
+        public void TestKnownCipherTextC543()
+        {
+            var enigma = CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.UKW_C);
+
+            const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string cipherText = "SIBKMIAZDAWKVEAVCZEVOJADCC";
+
+            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+
+            enigma.Reset();
+
+            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+        }
 
         [TestMethod]
-        public void TestDecryptKnownCipherText()
+        public void TestFilterInvalidChars()
         {
-            var plugBoard = new PlugBoard();
+            var enigma = CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, ReflectorType.UKW_B);
 
-            var reflector = Box.SelectReflector(ReflectorType.UKW_B);
+            var eightBitAscii = new string(Enumerable.Range(0, 256).Select(x => (char) x).ToArray());
+            const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXIMRENATHDMCEVOQHIUWRRGYSJAD";
 
-            var rotors = new[] { RotorType.I, RotorType.II, RotorType.III }.Select(Box.SelectRotor).ToArray();
+            Assert.AreEqual(cipherText, new string(enigma.Type(eightBitAscii).ToArray()));
 
-            var enigma = new Enigma(plugBoard, rotors, reflector);
+            enigma.Reset();
 
-            var cipher = enigma.Type("FUVEPUMWARVQKEFGHGDIJFMFXI");
-
-            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZ", new string(cipher.ToArray()));
+            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", new string(enigma.Type(cipherText).ToArray()));
         }
     }
 }
