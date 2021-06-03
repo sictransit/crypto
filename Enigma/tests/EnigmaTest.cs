@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
+using System;
 using System.Linq;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
@@ -168,6 +169,25 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
             enigma.Reset();
 
             Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+        }
+
+        [TestMethod]
+        public void TestRotateAll()
+        {
+            var enigma = CreateEnigma();
+
+            var rnd = new Random();
+
+            var clearText = new string(Enumerable.Range(0, 26 * 25 * 26).Select(x => (char)('A' + rnd.Next(26))).ToArray());
+
+            var cipher1 = new string(enigma.Type(clearText).ToArray());
+            var cipher2 = new string(enigma.Type(clearText).ToArray());
+            
+            Assert.AreEqual(cipher1, cipher2);
+
+            var decodedCipherText = new string(enigma.Type(cipher2).ToArray());
+
+            Assert.AreEqual(clearText, decodedCipherText);
         }
     }
 }
