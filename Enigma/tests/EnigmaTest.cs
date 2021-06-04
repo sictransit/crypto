@@ -11,17 +11,17 @@ namespace net.SicTransit.Crypto.Enigma.Tests
     {
         private static Enigma CreateEnigma()
         {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.UKW_B);
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B);
         }
 
         private static Enigma CreateEnigma(PlugBoard plugBoard)
         {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.UKW_B, plugBoard);
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B, plugBoard);
         }
 
         private static Enigma CreateEnigma(int[] ringSettings)
         {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, ringSettings, ReflectorType.UKW_B);
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, ringSettings, ReflectorType.B);
         }
 
         private static Enigma CreateEnigma(RotorType[] rotorTypes, ReflectorType reflectorType)
@@ -73,7 +73,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestKnownCipherTextC543()
         {
-            var enigma = CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.UKW_C);
+            var enigma = CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.C);
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "SIBKMIAZDAWKVEAVCZEVOJADCC";
@@ -178,11 +178,11 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var rnd = new Random();
 
-            var clearText = new string(Enumerable.Range(0, 26 * 25 * 26).Select(x => (char)('A' + rnd.Next(26))).ToArray());
+            var clearText = new string(Enumerable.Range(0, 26 * 25 * 26).Select(_ => (char)('A' + rnd.Next(26))).ToArray());
 
             var cipher1 = new string(enigma.Type(clearText).ToArray());
             var cipher2 = new string(enigma.Type(clearText).ToArray());
-            
+
             Assert.AreEqual(cipher1, cipher2);
 
             var decodedCipherText = new string(enigma.Type(cipher2).ToArray());

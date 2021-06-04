@@ -2,8 +2,8 @@
 {
     public enum ReflectorType
     {
-        UKW_A,
-        UKW_B,
-        UKW_C
+        A,
+        B,
+        C
     }
 }

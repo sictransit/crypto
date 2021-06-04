@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EnigmaConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}

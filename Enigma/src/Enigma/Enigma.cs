@@ -51,6 +51,8 @@ namespace net.SicTransit.Crypto.Enigma
 
         public void Reset()
         {
+            Log.Debug("resetting starting positions");
+
             for (var i = 0; i < startPositions.Length; i++)
             {
                 rotors[i].SetPosition(startPositions[i]);
@@ -82,7 +84,7 @@ namespace net.SicTransit.Crypto.Enigma
                 return true;
             }
 
-            Log.Debug($"types unsupported character: {c}");
+            Log.Debug($"filtered unsupported character: {c}");
 
             return false;
         }

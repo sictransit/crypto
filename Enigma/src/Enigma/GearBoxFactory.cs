@@ -22,9 +22,9 @@ namespace net.SicTransit.Crypto.Enigma
         {
             return type switch
             {
-                ReflectorType.UKW_A => new Reflector(type, "EJMZALYXVBWFCRQUONTSPIKHGD"),
-                ReflectorType.UKW_B => new Reflector(type, "YRUHQSLDPXNGOKMIEBFZCWVJAT"),
-                ReflectorType.UKW_C => new Reflector(type, "FVPJIAOYEDRZXWGCTKUQSBNMHL"),
+                ReflectorType.A => new Reflector(type, "EJMZALYXVBWFCRQUONTSPIKHGD"),
+                ReflectorType.B => new Reflector(type, "YRUHQSLDPXNGOKMIEBFZCWVJAT"),
+                ReflectorType.C => new Reflector(type, "FVPJIAOYEDRZXWGCTKUQSBNMHL"),
                 _ => throw new NotImplementedException(),
             };
         }

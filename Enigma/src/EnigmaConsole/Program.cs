@@ -1,7 +1,8 @@
-﻿using net.SicTransit.Crypto.Enigma.Enums;
+﻿using CommandLine;
+using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using Serilog;
-using System.Diagnostics;
+using System;
 using System.Linq;
 
 namespace net.SicTransit.Crypto.Enigma
@@ -10,30 +11,48 @@ namespace net.SicTransit.Crypto.Enigma
     {
         public static void Main(string[] args)
         {
-            Logging.EnableLogging(Serilog.Events.LogEventLevel.Debug);
+            Logging.EnableLogging(Serilog.Events.LogEventLevel.Information);
 
-            var plugBoard = new PlugBoard("EN IG MA");
-            var ringSettings = new[] { 1, 7, 23 };
-            var rotors = new[] { RotorType.III, RotorType.V, RotorType.IV }.Select((x, i) => GearBoxFactory.SelectRotor(x, ringSettings[i])).ToArray();
+            Parser.Default.ParseArguments<Options>(args).WithParsed(o =>
+            {
+                try
+                {
+                    Encrypt(o);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "caught exception while setting up the machine");
+                }
+            });
+        }
 
-            var enigma = new Enigma(plugBoard, rotors, GearBoxFactory.SelectReflector(ReflectorType.UKW_C));
-            enigma.SetStartPositions(new[] { 'A', 'L', 'N' });
+        private static void Encrypt(Options o)
+        {
+            var plugBoard = new PlugBoard(string.Join(' ', o.PlugBoard));
 
-            Log.Information($"settings: {enigma}");
+            var rotors = o.Rotors.Select(Enum.Parse<RotorType>)
+                .Select((x, i) => GearBoxFactory.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
+            var reflector = GearBoxFactory.SelectReflector(Enum.Parse<ReflectorType>(o.Reflector));
 
-            var cipherText = "xcsji kmiaa fxfhs esrhj lmyvf dvvkj hxvhn thxxm fhpkr cmym".ToEnigmaText();
+            var enigma = new Enigma(plugBoard, rotors, reflector);
+            enigma.SetStartPositions(o.StartPositions.ToArray());
 
-            Log.Information($"cipher: {cipherText}");
+            Log.Information(enigma.ToString());
 
-            var sw = new Stopwatch();
+            var input = (o.Input ?? string.Empty).ToEnigmaText();
 
-            sw.Start();
+            if (!string.IsNullOrEmpty(input))
+            {
+                Log.Information($"input: {input.ChunkedByFive()}");
 
-            var clearText = enigma.Type(cipherText);
+                var output = new string(enigma.Type(o.Input).ToArray());
 
-            var elapsed = sw.Elapsed;
-
-            Log.Information($"clear: {new string(clearText.ToArray())} (time: {elapsed})");
+                Log.Information($"output: {output.ChunkedByFive()}");
+            }
+            else
+            {
+                Log.Warning("no input");
+            }
         }
     }
 }

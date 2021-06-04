@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>net.SicTransit.Crypto.Enigma</RootNamespace>
+    <Authors>Mikael Fredriksson</Authors>
   </PropertyGroup>
 
   <ItemGroup>

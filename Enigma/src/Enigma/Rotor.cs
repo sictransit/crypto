@@ -14,6 +14,7 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly int ringSetting;
         private readonly bool hasGearBox;
         private int position;
+        private readonly string name;
 
         public Rotor(RotorType type, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
         {
@@ -23,7 +24,7 @@ namespace net.SicTransit.Crypto.Enigma
             this.notch = notch;
             this.ringSetting = ringSetting;
             this.hasGearBox = hasGearBox;
-            Name = type.ToString();
+            name = type.ToString();
 
             for (var i = 0; i < wiring.Length; i++)
             {
@@ -34,8 +35,6 @@ namespace net.SicTransit.Crypto.Enigma
         }
 
         public override EncoderType EncoderType => EncoderType.Rotor;
-
-        public string Name { get; }
 
         private char RingSetting => (char)('A' + ringSetting - 1);
 
@@ -74,7 +73,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} {Name} rs={RingSetting}";
+            return $"{base.ToString()} {name} rs={RingSetting}";
         }
     }
 }
