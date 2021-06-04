@@ -2,7 +2,7 @@
 
 namespace net.SicTransit.Crypto.Enigma.Extensions
 {
-    public static class CharExtensions
+    public static class TextExtensions
     {
         public static char WrapAround(this char c)
         {
@@ -17,6 +17,11 @@ namespace net.SicTransit.Crypto.Enigma.Extensions
         public static string ToEnigmaText(this string s)
         {
             return new(s.ToUpperInvariant().Where(c => c >= 'A' && c <= 'Z').ToArray());
+        }
+
+        public static string ChunkedByFive(this string s)
+        {
+            return string.Join(' ', s.ChunkBy(5).Select(x => new string(x.ToArray())));
         }
     }
 }
