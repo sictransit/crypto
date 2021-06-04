@@ -45,7 +45,7 @@ namespace net.SicTransit.Crypto.Enigma
             {
                 Log.Information($"input: {input.ChunkedByFive()}");
 
-                var output = new string(enigma.Type(o.Input).ToArray());
+                var output = enigma.Transform(o.Input);
 
                 Log.Information($"output: {output.ChunkedByFive()}");
             }

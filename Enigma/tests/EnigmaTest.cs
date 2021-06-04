@@ -63,11 +63,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXI";
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText, enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -78,11 +78,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "SIBKMIAZDAWKVEAVCZEVOJADCC";
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText, enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -93,11 +93,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             var eightBitAscii = new string(Enumerable.Range(0, 256).Select(x => (char)x).ToArray());
             const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXIMRENATHDMCEVOQHIUWRRGYSJAD";
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(eightBitAscii).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(eightBitAscii));
 
             enigma.Reset();
 
-            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -110,11 +110,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "IOLIXDTUDYJEJKTXXFNAYEZQHI";
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText, enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -125,11 +125,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "CAHZZUIFVTNDVZGJOKPXLUUNOD";
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText, enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -147,11 +147,11 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var enigma = CreateEnigma();
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText.ToEnigmaText(), new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText.ToEnigmaText(), enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -164,11 +164,11 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var cipherText = "tuvep unwzr vqwvf ghgdi jfnfx d".ToEnigmaText();
 
-            Assert.AreEqual(cipherText, new string(enigma.Type(clearText).ToArray()));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
             enigma.Reset();
 
-            Assert.AreEqual(clearText, new string(enigma.Type(cipherText).ToArray()));
+            Assert.AreEqual(clearText, enigma.Transform(cipherText));
         }
 
         [TestMethod]
@@ -180,14 +180,35 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var clearText = new string(Enumerable.Range(0, 26 * 25 * 26).Select(_ => (char)('A' + rnd.Next(26))).ToArray());
 
-            var cipher1 = new string(enigma.Type(clearText).ToArray());
-            var cipher2 = new string(enigma.Type(clearText).ToArray());
+            var cipher = enigma.Transform(clearText);
 
-            Assert.AreEqual(cipher1, cipher2);
+            Assert.AreEqual(cipher, enigma.Transform(clearText));
 
-            var decodedCipherText = new string(enigma.Type(cipher2).ToArray());
+            Assert.AreEqual(clearText, enigma.Transform(cipher));
+        }
 
-            Assert.AreEqual(clearText, decodedCipherText);
+        [TestMethod]
+        public void TestLazyEncoding()
+        {
+            var s = new string('A', 1024);
+
+            var enigma = CreateEnigma();
+
+            Assert.AreEqual('A', enigma.Rotors.First().Position);
+
+            var enumerator = enigma.Type(s);
+
+            var clearText = enumerator.Take(10);
+
+            Assert.AreEqual(10, clearText.Count());
+
+            Assert.AreEqual((char)('A' + 10), enigma.Rotors.First().Position);
+
+            clearText = enumerator.Skip(1).Take(10);
+
+            Assert.AreEqual(10, clearText.Count());
+
+            Assert.AreEqual((char)('A' + 10 + 1 + 10), enigma.Rotors.First().Position);
         }
     }
 }
