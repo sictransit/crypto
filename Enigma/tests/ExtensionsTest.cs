@@ -13,7 +13,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         {
             const string s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-            var chunked = s.ChunkedByFive();
+            var chunked = s.GroupedBy();
 
             Assert.AreEqual((int)Math.Ceiling(s.Length / 5d) - 1, chunked.Count(x => x == ' '));
         }

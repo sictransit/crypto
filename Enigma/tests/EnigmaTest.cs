@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
+
 using System;
 using System.Linq;
 using System.Text;
@@ -10,39 +11,10 @@ namespace net.SicTransit.Crypto.Enigma.Tests
     [TestClass]
     public class EnigmaTest
     {
-        private static Enigma CreateEnigma()
-        {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B);
-        }
-
-        private static Enigma CreateEnigma(Plugboard plugboard)
-        {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B, plugboard);
-        }
-
-        private static Enigma CreateEnigma(int[] ringSettings)
-        {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, ringSettings, ReflectorType.B);
-        }
-
-        private static Enigma CreateEnigma(RotorType[] rotorTypes, ReflectorType reflectorType)
-        {
-            return CreateEnigma(rotorTypes, new[] { 1, 1, 1 }, reflectorType);
-        }
-
-        private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, Plugboard plugboard = null)
-        {
-            var reflector = GearBox.SelectReflector(reflectorType);
-
-            var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
-
-            return new Enigma(plugboard ?? new Plugboard(), rotors, reflector);
-        }
-
         [TestMethod]
         public void TestTyping()
         {
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXI";
@@ -59,7 +31,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestKnownCipherTextB321()
         {
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXI";
@@ -74,7 +46,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestKnownCipherTextC543()
         {
-            var enigma = CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.C);
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.C);
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "SIBKMIAZDAWKVEAVCZEVOJADCC";
@@ -89,7 +61,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestFilterInvalidChars()
         {
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             var eightBitAscii = new string(Enumerable.Range(0, 256).Select(x => (char)x).ToArray());
             const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXIMRENATHDMCEVOQHIUWRRGYSJAD";
@@ -104,7 +76,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestStartPositions()
         {
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             enigma.SetStartPositions(new[] { 'A', 'B', 'C' });
 
@@ -121,7 +93,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestRingSettings()
         {
-            var enigma = CreateEnigma(new[] { 1, 2, 3 });
+            var enigma = EnigmaFactory.CreateEnigma(new[] { 1, 2, 3 });
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "CAHZZUIFVTNDVZGJOKPXLUUNOD";
@@ -146,7 +118,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var cipherText = "ILFDFARUBDONVISRUKOZQMNDIYCOUHRLAWBRMPYLAZNYNGRWARYIEYBRYYNEIWRSGFPPYGZLSGGJQNLHSVSPZVBCUZTXSDUWCCDJURPGUWCWPVEOPSCYXYNTESGUZQYREZSNSZJMNCSLSYKYFPUMYJBARSKJSZWEHWPFLYPAEJQUXMBIVVZCCRWJKTLSHRBZXSBLSFZTOKYXVKZOYZHHTUMWPBVAYCIWMTJFJSTEWTRUCMGIBIJQGPJYPYZJTZECAGETDKALLBYXGWSVLSWRVQCGXTQVQOJPKXRQLRISNLZZVKZLWTOALBLZVRVEKHCYIMWUQJCJTBUBIVHQOIDLMFXJPHYLLAEJMNWVKNHXKQHKCNDMFRFXFFTHBYDFKRBNZBPIKHUCXRMAQFQSVXKUNGIZQMRQYQJTTBLQHWRWQKPFGVREFSBBXHJPAJYETLMSFYLOJCXDMWWBTEWSRECALTXHMQTBQTERTSFZQZEQRHVDZSRXEYBWKWEZKVMTGQVZKXJAOEHBQYTNSDDICLFIHLOQFWAKDKRPHHHLCFRPZMBWYHUPQPWFFHIDQHDCRGYLGHIQNBNXAZWTCSWUHJEPRQFLOOJAZPFBJUIJJAZDXWOZWQSJWFZWIPWASNQTYIEGQKSERHKUBKQQTMBMCVPOZOPZUABXQVXXXHSBLKJKBJLWMEBDLKNJXOAHOUGEHWCWBTCMNYZIZXCPWLNIIJXIOFFRQXZDZOPTSABIKIXMYLIGOMCDIIFDCRSYKXZZVNYEAMBMFEJNOQGOKPRGSPGPACINYNNICJCODWJJGDKURJEXRAOIIEQAVNCZWGZIXAGWNQUVIJWYSAQWADLBFBPBLFNQWWBPKIFLBENLEDPXLGLQDMLKUELTBWQDXFOCULZHAPLLKUKYVJUQIHOTGTMVKFFWUWKPUQGCNPVKYPMYUPQJKYIYNIVXBMYBJZNFFJAXXSUYJNFXRERBNRUPKCFPRWQGMNCWXNLLBXULOHTBGGXCUCGOKBRJXMRICBFPWPISPLCQVFRKMPJNKCOFMHVTASSGFEVLGRPHTZVWTWWPRVOMKQOSATNZQSURQWNNQHVDQQQGDOFVHVMATISQWNOUQQKBCGHQXRDXQQVFBLOJWHPHBGQGXXJFRVPQMVXRNQSOMKREDJORRMVSYOGPXBZKYBUHXAKGVRGZDRDVDQQXWIUYZETHVBQORIFCVSWJXPDDWLFXZSACVQWLPLNQGHYNIWSSSOAPACFUHGGLGJTDHOAWNAOHAJPNQZJHNKZCEMXVMHCKAAOQHJAPXRVZTRHVDUSEJIFWUZFRCAEJGTPKIXLYJZFZVBMSWATVYZJBLNPPNUZNJVUEZKZYEHVDUXGZWQSLWDBYOWTEMUHLYWNHICCHHPUXPRUPOCJRDVSIRTBQPQCGSQFWQJUNQDPWQMQKUCWEMXVYGYAEKSDFTFWFFEGMYPJFVJQEYMXWSLELZGCWONCINCORCNBNMZLYHXODHHEPEWUZTKBHTIXZTVRHUWNOXDSCRASTJXALTQXAQZPSCIHOOWFPHJCBATYWUHVBBCGGRYDFKWLMJWFRNRULEMQZEILHHRVIPTURJBTKCZBHOEPHNZICMLLPKBKBNKDKOQMQEIYCWUSHNQBNRNIPBCEGULNIHHBSGUWRJNVHUFJHNRNEPWNLYHWMFWMUREDPZTAGAXUTTUABYYFXVSWRKDVNQVKFFOEJWQALKFMZYNENMJRKFOYPNAAUJFQGDDOCYYWXAUWDQNLTUKUDCSPEYXDDODCRGEHYEVRVIZTGIDBRIMNHOXQVXAGFRNMRFIOVNMRVCQZCKOTQPBBNJUPTEWNFIDBSDCVKHNCOSPXLBRCSQOXEFKJVHSHAVIRASHXMQSAHFNAFAEEYZILKXUXTZNTACTBUTVEJGGIONYGQVTTHLXVPRIHWRDGYJSJLPEGNLNSRHJZUWVZPLBHUQKWILGUVGVQBWAGWOTKVKYKYWUTTBZKZCINUOSUMTQJWXLHQCXABCMTQPPLCADMZZNHWTZBCAQNTMFDUNAVHQVHYISLSYTWDJIUXGTSGCGDADAKWCFRWIZLJRRDGBEAPIKOTDOZHHSNGDSXJPMAFIUAUYOILDBOVQNDXJWGEHSTLFTZQIALBBYNQIPOOZSFHNALSYQCPKJSSEKVMLJOGCFLLFWKBZUOEKWJSFOFMGTFYWVSWUXQFADOXPURBDAOBKHWZBXMUKEYXUDPQTLBJDVVTJOWFDZNHLARTRDCELTOGQG";
 
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             Assert.AreEqual(cipherText, enigma.Transform(clearText));
 
@@ -160,7 +132,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         {
             var plugboard = new Plugboard("AZ MN");
 
-            var enigma = CreateEnigma(plugboard);
+            var enigma = EnigmaFactory.CreateEnigma(plugboard);
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var cipherText = "tuvep unwzr vqwvf ghgdi jfnfx d".ToEnigmaText();
@@ -175,7 +147,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestRotateAll()
         {
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             var rnd = new Random();
 
@@ -191,7 +163,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestMultipleNotches()
         {
-            var enigma = CreateEnigma(new[] { RotorType.VI, RotorType.VII, RotorType.VIII }, ReflectorType.B);
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.VI, RotorType.VII, RotorType.VIII }, ReflectorType.B);
 
             Assert.IsTrue(enigma.Rotors.All(r => r.Position == 'A'));
 
@@ -216,7 +188,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         {
             var s = new string('A', 1024);
 
-            var enigma = CreateEnigma();
+            var enigma = EnigmaFactory.CreateEnigma();
 
             Assert.AreEqual('A', enigma.Rotors.First().Position);
 

@@ -9,6 +9,8 @@
         V,
         VI,
         VII,
-        VIII
+        VIII,
+        Beta,
+        Gamma
     }
 }

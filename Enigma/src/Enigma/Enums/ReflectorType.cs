@@ -4,6 +4,9 @@
     {
         A,
         B,
-        C
+        ThinB,
+        C,
+        ThinC,
+        ETW
     }
 }

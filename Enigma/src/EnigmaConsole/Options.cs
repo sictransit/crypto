@@ -8,10 +8,10 @@ namespace net.SicTransit.Crypto.Enigma
         [Option("plugboard", Required = false, Default = new string[0], HelpText = "groups of two characters, e.g. \"AZ MN\"")]
         public IEnumerable<string> PlugBoard { get; set; }
 
-        [Option("rotors", Required = false, Default = new[] { "I", "II", "III" }, HelpText = "available rotors: I - VIII")]
+        [Option("rotors", Required = false, Default = new[] { "I", "II", "III" }, HelpText = "available rotors: I - VIII, Beta, Gamma")]
         public IEnumerable<string> Rotors { get; set; }
 
-        [Option("reflector", Required = false, Default = "B", HelpText = "available reflectors: A, B, C")]
+        [Option("reflector", Required = false, Default = "B", HelpText = "available reflectors: A, B, C, ThinB, ThinC, ETW")]
         public string Reflector { get; set; }
 
         [Option("ringsettings", Required = false, Default = new[] { 1, 1, 1 }, HelpText = "three numbers: 1-26")]

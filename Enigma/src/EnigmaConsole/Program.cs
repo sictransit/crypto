@@ -43,11 +43,11 @@ namespace net.SicTransit.Crypto.Enigma
 
             if (!string.IsNullOrEmpty(input))
             {
-                Log.Information($"input: {input.ChunkedByFive()}");
+                Log.Information($"input: {input.GroupedBy()}");
 
                 var output = enigma.Transform(o.Input);
 
-                Log.Information($"output: {output.ChunkedByFive()}");
+                Log.Information($"output: {output.GroupedBy()}");
             }
             else
             {

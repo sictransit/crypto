@@ -19,9 +19,9 @@ namespace net.SicTransit.Crypto.Enigma.Extensions
             return new(s.ToUpperInvariant().Where(c => c >= 'A' && c <= 'Z').ToArray());
         }
 
-        public static string ChunkedByFive(this string s)
+        public static string GroupedBy(this string s, int length = 5)
         {
-            return string.Join(' ', s.ChunkBy(5).Select(x => new string(x.ToArray())));
+            return string.Join(' ', s.ChunkBy(length).Select(x => new string(x.ToArray())));
         }
     }
 }

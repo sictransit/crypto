@@ -8,8 +8,6 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Enigma
     {
-        private char[] startPositions;
-
         public Enigma(Plugboard plugboard, Rotor[] rotors, Reflector reflector)
         {
             PlugBoard = plugboard ?? throw new ArgumentNullException(nameof(plugboard));
@@ -22,7 +20,7 @@ namespace net.SicTransit.Crypto.Enigma
 
             AttachDevices();
 
-            startPositions = Rotors.Select(x => x.Position).ToArray();
+            StartPositions = Rotors.Select(x => x.Position).ToArray();
         }
 
         public void AttachDevices()
@@ -60,6 +58,8 @@ namespace net.SicTransit.Crypto.Enigma
 
         public Reflector Reflector { get; init; }
 
+        public char[] StartPositions { get; private set; }
+
         public void SetStartPositions(char[] positions)
         {
             if (positions == null) throw new ArgumentNullException(nameof(positions));
@@ -69,7 +69,7 @@ namespace net.SicTransit.Crypto.Enigma
                 throw new ArgumentOutOfRangeException(nameof(positions));
             }
 
-            startPositions = positions;
+            StartPositions = positions;
 
             Reset();
         }
@@ -78,9 +78,9 @@ namespace net.SicTransit.Crypto.Enigma
         {
             Log.Debug("resetting starting positions");
 
-            for (var i = 0; i < startPositions.Length; i++)
+            for (var i = 0; i < StartPositions.Length; i++)
             {
-                Rotors[i].SetPosition(startPositions[i]);
+                Rotors[i].SetPosition(StartPositions[i]);
             }
         }
 
@@ -127,7 +127,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={startPositions[i]}").Reverse());
+            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}").Reverse());
 
             return $"{Reflector} - {r} - {PlugBoard}";
         }

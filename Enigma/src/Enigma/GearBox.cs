@@ -17,6 +17,8 @@ namespace net.SicTransit.Crypto.Enigma
                 RotorType.VI => new Rotor(type, "JPGVOUMFYQBENHZRDKASXLICTW", new[] { 'Z', 'M' }, ringSetting),
                 RotorType.VII => new Rotor(type, "NZJHGRCXMYSWBOUFAIVLPEKQDT", new[] { 'Z', 'M' }, ringSetting),
                 RotorType.VIII => new Rotor(type, "FKQHTLXOCBJSPDZRAMEWNIUYGV", new[] { 'Z', 'M' }, ringSetting),
+                RotorType.Beta => new Rotor(type, "LEYJVCNIXWPBQMDRTAKZGFUHOS", '-', ringSetting),
+                RotorType.Gamma => new Rotor(type, "FSOKANUERHMBTIYCWLQPZXVGJD", '-', ringSetting),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -27,7 +29,10 @@ namespace net.SicTransit.Crypto.Enigma
             {
                 ReflectorType.A => new Reflector(type, "EJMZALYXVBWFCRQUONTSPIKHGD"),
                 ReflectorType.B => new Reflector(type, "YRUHQSLDPXNGOKMIEBFZCWVJAT"),
+                ReflectorType.ThinB => new Reflector(type, "ENKQAUYWJICOPBLMDXZVFTHRGS"),
                 ReflectorType.C => new Reflector(type, "FVPJIAOYEDRZXWGCTKUQSBNMHL"),
+                ReflectorType.ThinC => new Reflector(type, "RDOBJNTKVEHMLFCWZAXGYIPSUQ"),
+                ReflectorType.ETW => new Reflector(type, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
                 _ => throw new NotImplementedException(),
             };
         }
