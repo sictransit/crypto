@@ -18,19 +18,39 @@ namespace net.SicTransit.Crypto.Enigma
 
             Keyboard = new Keyboard();
 
-            Keyboard.Attach(PlugBoard);
+            Lampboard = new Lampboard();
 
-            PlugBoard.Attach(Rotors[0]);
-
-            for (var i = 0; i < Rotors.Length - 1; i++)
-            {
-                Rotors[i].Attach(Rotors[i + 1]);
-            }
-
-            Rotors[^1].Attach(Reflector);
+            AttachDevices();
 
             startPositions = Rotors.Select(x => x.Position).ToArray();
         }
+
+        public void AttachDevices()
+        {
+            Keyboard.Attach(PlugBoard, Direction.Forward);
+
+            PlugBoard.Attach(Rotors[0], Direction.Forward);
+
+            for (var i = 0; i < Rotors.Length - 1; i++)
+            {
+                Rotors[i].Attach(Rotors[i + 1], Direction.Forward);
+            }
+
+            Rotors[^1].Attach(Reflector, Direction.Forward);
+
+            Reflector.Attach(Rotors[^1], Direction.Reverse);
+
+            for (var i = Rotors.Length - 1; i > 0; i--)
+            {
+                Rotors[i].Attach(Rotors[i - 1], Direction.Reverse);
+            }
+
+            Rotors[0].Attach(PlugBoard, Direction.Reverse);
+
+            PlugBoard.Attach(Lampboard, Direction.Reverse);
+        }
+
+        public Lampboard Lampboard { get; init; }
 
         public Keyboard Keyboard { get; init; }
 
@@ -64,7 +84,7 @@ namespace net.SicTransit.Crypto.Enigma
             }
         }
 
-        public char Display => Keyboard.ReverseChar;
+        public char Display => Lampboard.Lit;
 
         public IEnumerable<char> Type(IEnumerable<char> chars)
         {

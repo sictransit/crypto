@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace net.SicTransit.Crypto.Enigma
 {
-    public class Plugboard : EncoderBase
+    public class Plugboard : EnigmaDevice
     {
         private readonly Dictionary<char, char> wires = new();
 
@@ -33,7 +33,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} wiring={wiring}";
+            return $"{base.ToString()} wiring={(string.IsNullOrEmpty(wiring) ? "()" : wiring)}";
         }
     }
 }

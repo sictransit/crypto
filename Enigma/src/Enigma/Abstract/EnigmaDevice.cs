@@ -3,45 +3,47 @@ using System;
 
 namespace net.SicTransit.Crypto.Enigma.Abstract
 {
-    public abstract class EncoderBase
+    public abstract class EnigmaDevice
     {
-        protected EncoderBase NextEncoder { get; private set; }
+        protected EnigmaDevice ForwardDevice { get; private set; }
 
-        protected EncoderBase PreviousEncoder { get; private set; }
+        protected EnigmaDevice ReverseDevice { get; private set; }
 
         public abstract EncoderType EncoderType { get; }
-
-        protected char ForwardChar { get; set; }
-
-        public char ReverseChar { get; private set; }
 
         public virtual void Transpose(char c, Direction direction)
         {
             switch (direction)
             {
                 case Direction.Forward:
-                    ForwardChar = c;
-                    NextEncoder?.Transpose(c, direction);
+                    ForwardDevice?.Transpose(c, direction);
                     break;
                 case Direction.Reverse:
-                    ReverseChar = c;
-                    PreviousEncoder?.Transpose(c, direction);
+                    ReverseDevice?.Transpose(c, direction);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
         }
 
-        public void Attach(EncoderBase e)
+        public virtual void Attach(EnigmaDevice e, Direction direction)
         {
-            NextEncoder = e;
-
-            e.PreviousEncoder = this;
+            switch (direction)
+            {
+                case Direction.Forward:
+                    ForwardDevice = e;
+                    break;
+                case Direction.Reverse:
+                    ReverseDevice = e;
+                    break;
+                default:
+                    throw new NotImplementedException(direction.ToString());
+            }
         }
 
         public virtual void Tick(bool turn = false)
         {
-            NextEncoder?.Tick(turn);
+            ForwardDevice?.Tick(turn);
         }
 
         public override string ToString()
