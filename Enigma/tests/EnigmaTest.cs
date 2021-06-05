@@ -15,9 +15,9 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B);
         }
 
-        private static Enigma CreateEnigma(PlugBoard plugBoard)
+        private static Enigma CreateEnigma(Plugboard plugboard)
         {
-            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B, plugBoard);
+            return CreateEnigma(new[] { RotorType.I, RotorType.II, RotorType.III }, new[] { 1, 1, 1 }, ReflectorType.B, plugboard);
         }
 
         private static Enigma CreateEnigma(int[] ringSettings)
@@ -30,13 +30,13 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             return CreateEnigma(rotorTypes, new[] { 1, 1, 1 }, reflectorType);
         }
 
-        private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, PlugBoard plugBoard = null)
+        private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, Plugboard plugboard = null)
         {
             var reflector = GearBox.SelectReflector(reflectorType);
 
             var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
 
-            return new Enigma(plugBoard ?? new PlugBoard(), rotors, reflector);
+            return new Enigma(plugboard ?? new Plugboard(), rotors, reflector);
         }
 
         [TestMethod]
@@ -158,9 +158,9 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestPlugBoard()
         {
-            var plugBoard = new PlugBoard("AZ MN");
+            var plugboard = new Plugboard("AZ MN");
 
-            var enigma = CreateEnigma(plugBoard);
+            var enigma = CreateEnigma(plugboard);
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var cipherText = "tuvep unwzr vqwvf ghgdi jfnfx d".ToEnigmaText();

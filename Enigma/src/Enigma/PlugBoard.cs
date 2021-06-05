@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace net.SicTransit.Crypto.Enigma
 {
-    public class PlugBoard : EncoderBase
+    public class Plugboard : EncoderBase
     {
         private readonly Dictionary<char, char> wires = new();
 
         private readonly string wiring;
 
-        public PlugBoard(string wiring = null)
+        public Plugboard(string wiring = null)
         {
             this.wiring = wiring ?? string.Empty;
 
@@ -22,7 +22,7 @@ namespace net.SicTransit.Crypto.Enigma
             }
         }
 
-        public override EncoderType EncoderType => EncoderType.PlugBoard;
+        public override EncoderType EncoderType => EncoderType.Plugboard;
 
         public override void Transpose(char c, Direction direction)
         {

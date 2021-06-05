@@ -3,7 +3,8 @@
     public enum EncoderType
     {
         Keyboard,
-        PlugBoard,
+        Lampboard,
+        Plugboard,
         Rotor,
         Reflector
     }

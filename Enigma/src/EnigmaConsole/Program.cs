@@ -28,13 +28,13 @@ namespace net.SicTransit.Crypto.Enigma
 
         private static void Encrypt(Options o)
         {
-            var plugBoard = new PlugBoard(string.Join(' ', o.PlugBoard));
+            var plugboard = new Plugboard(string.Join(' ', o.PlugBoard));
 
             var rotors = o.Rotors.Select(Enum.Parse<RotorType>)
                 .Select((x, i) => GearBox.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
             var reflector = GearBox.SelectReflector(Enum.Parse<ReflectorType>(o.Reflector));
 
-            var enigma = new Enigma(plugBoard, rotors, reflector);
+            var enigma = new Enigma(plugboard, rotors, reflector);
             enigma.SetStartPositions(o.StartPositions.ToArray());
 
             Log.Information(enigma.ToString());

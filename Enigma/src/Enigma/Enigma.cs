@@ -10,9 +10,9 @@ namespace net.SicTransit.Crypto.Enigma
     {
         private char[] startPositions;
 
-        public Enigma(PlugBoard plugBoard, Rotor[] rotors, Reflector reflector)
+        public Enigma(Plugboard plugboard, Rotor[] rotors, Reflector reflector)
         {
-            PlugBoard = plugBoard ?? throw new ArgumentNullException(nameof(plugBoard));
+            PlugBoard = plugboard ?? throw new ArgumentNullException(nameof(plugboard));
             Rotors = rotors ?? throw new ArgumentNullException(nameof(rotors));
             Reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
 
@@ -34,7 +34,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public Keyboard Keyboard { get; init; }
 
-        public PlugBoard PlugBoard { get; init; }
+        public Plugboard PlugBoard { get; init; }
 
         public Rotor[] Rotors { get; init; }
 
