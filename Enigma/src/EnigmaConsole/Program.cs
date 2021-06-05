@@ -31,8 +31,8 @@ namespace net.SicTransit.Crypto.Enigma
             var plugBoard = new PlugBoard(string.Join(' ', o.PlugBoard));
 
             var rotors = o.Rotors.Select(Enum.Parse<RotorType>)
-                .Select((x, i) => GearBoxFactory.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
-            var reflector = GearBoxFactory.SelectReflector(Enum.Parse<ReflectorType>(o.Reflector));
+                .Select((x, i) => GearBox.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
+            var reflector = GearBox.SelectReflector(Enum.Parse<ReflectorType>(o.Reflector));
 
             var enigma = new Enigma(plugBoard, rotors, reflector);
             enigma.SetStartPositions(o.StartPositions.ToArray());

@@ -40,7 +40,6 @@ namespace net.SicTransit.Crypto.Enigma
 
         public Reflector Reflector { get; init; }
 
-
         public void SetStartPositions(char[] positions)
         {
             if (positions == null) throw new ArgumentNullException(nameof(positions));

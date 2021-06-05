@@ -3,6 +3,7 @@ using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -31,9 +32,9 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
         private static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, PlugBoard plugBoard = null)
         {
-            var reflector = GearBoxFactory.SelectReflector(reflectorType);
+            var reflector = GearBox.SelectReflector(reflectorType);
 
-            var rotors = rotorTypes.Select((t, i) => GearBoxFactory.SelectRotor(t, ringSettings[i])).ToArray();
+            var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
 
             return new Enigma(plugBoard ?? new PlugBoard(), rotors, reflector);
         }
@@ -185,6 +186,29 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
             Assert.AreEqual(cipher, enigma.Transform(clearText));
 
             Assert.AreEqual(clearText, enigma.Transform(cipher));
+        }
+
+        [TestMethod]
+        public void TestMultipleNotches()
+        {
+            var enigma = CreateEnigma(new[] { RotorType.VI, RotorType.VII, RotorType.VIII }, ReflectorType.B);
+
+            Assert.IsTrue(enigma.Rotors.All(r => r.Position == 'A'));
+
+            var cipher = "lrbmu wamnn pvdru sajzg ofbop awczp mledl qlnxi ngben pblqh odimv mmqxk nvieq wemln fjkzo qiylg eerbx ihiit elamy dobnd sdetz cdrwm kgayt hbqgb rihgp ueobi xuqwz rdqvp wodru wjnxg jicom dmale bwalh iptsb hftjh gigno tg";
+
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < 7; i++)
+            {
+                sb.Append(new string(enigma.Type("ABCDEFGHIJKLMNOPQRSTUVWXYZ").ToArray()));
+            }
+
+            Assert.AreEqual(cipher.ToEnigmaText(), sb.ToString());
+
+            Assert.AreEqual('A', enigma.Rotors[0].Position);
+            Assert.AreEqual('P', enigma.Rotors[1].Position);
+            Assert.AreEqual('B', enigma.Rotors[2].Position);
         }
 
         [TestMethod]

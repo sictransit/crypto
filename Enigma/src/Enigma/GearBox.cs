@@ -3,7 +3,7 @@ using System;
 
 namespace net.SicTransit.Crypto.Enigma
 {
-    public static class GearBoxFactory
+    public static class GearBox
     {
         public static Rotor SelectRotor(RotorType type, int ringSetting = 1)
         {
@@ -14,6 +14,9 @@ namespace net.SicTransit.Crypto.Enigma
                 RotorType.III => new Rotor(type, "BDFHJLCPRTXVZNYEIWGAKMUSQO", 'V', ringSetting),
                 RotorType.IV => new Rotor(type, "ESOVPZJAYQUIRHXLNFTGKDCMWB", 'J', ringSetting),
                 RotorType.V => new Rotor(type, "VZBRGITYUPSDNHLXAWMJQOFECK", 'Z', ringSetting),
+                RotorType.VI => new Rotor(type, "JPGVOUMFYQBENHZRDKASXLICTW", new[] { 'Z', 'M' }, ringSetting),
+                RotorType.VII => new Rotor(type, "NZJHGRCXMYSWBOUFAIVLPEKQDT", new[] { 'Z', 'M' }, ringSetting),
+                RotorType.VIII => new Rotor(type, "FKQHTLXOCBJSPDZRAMEWNIUYGV", new[] { 'Z', 'M' }, ringSetting),
                 _ => throw new NotImplementedException(),
             };
         }

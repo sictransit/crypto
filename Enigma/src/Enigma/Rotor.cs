@@ -3,6 +3,7 @@ using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace net.SicTransit.Crypto.Enigma
 {
@@ -10,18 +11,18 @@ namespace net.SicTransit.Crypto.Enigma
     {
         private readonly Dictionary<char, char> forwardWiring = new();
         private readonly Dictionary<char, char> reverseWiring = new();
-        private readonly char notch;
+        private readonly char[] notches;
         private readonly int ringSetting;
         private readonly bool hasGearBox;
         private int position;
         private readonly string name;
 
-        public Rotor(RotorType type, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
+        public Rotor(RotorType type, string wiring, IEnumerable<char> notches, int ringSetting = 1, bool hasGearBox = false)
         {
             if (wiring == null) throw new ArgumentNullException(nameof(wiring));
             if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
 
-            this.notch = notch;
+            this.notches = notches.ToArray();
             this.ringSetting = ringSetting;
             this.hasGearBox = hasGearBox;
             name = type.ToString();
@@ -34,13 +35,16 @@ namespace net.SicTransit.Crypto.Enigma
             }
         }
 
+        public Rotor(RotorType type, string wiring, char notch, int ringSetting = 1, bool hasGearBox = false)
+            : this(type, wiring, new[] { notch }, ringSetting, hasGearBox) { }
+
         public override EncoderType EncoderType => EncoderType.Rotor;
 
         private char RingSetting => (char)('A' + ringSetting - 1);
 
         public char Position => (char)('A' + position);
 
-        private bool IsNotched => Position == notch;
+        private bool IsNotched => notches.Any(n => n == Position);
 
         private bool WillDoubleStep => !hasGearBox && NextEncoder.EncoderType == EncoderType.Rotor && PreviousEncoder.EncoderType == EncoderType.Rotor;
 
