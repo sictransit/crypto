@@ -136,6 +136,10 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var cipherText = "OSVKA IYZML IIGEN HCAVF RUBSC INRPS YBEQB KPWCX CMZHO KONZM RGOCP TZNBL ALERX ZTVAR WEPUO FRVZI GYZXL WVLXE YXIKJ FDPLD RHFAB EANKJ FWWOB NKFPO RLUUU";
 
+            var sw = new Stopwatch();
+
+            sw.Start();
+
             for (int i = 0; i < 26; i++)
             {
                 for (int j = 0; j < 26; j++)
@@ -144,11 +148,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                     {
                         enigma.SetStartPositions(new[] { (char)('A' + i), (char)('A' + j), (char)('A' + k) });
 
-                        var clearText = enigma.Transform(cipherText);
+                        var clearText = enigma.Transform(cipherText);                        
 
                         if (clearText.Contains("NORTHFIVE"))
                         {
-                            Trace.WriteLine($"[start: {new string(enigma.StartPositions)}]: {clearText}");
+                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: {clearText}");
 
                             return;
                         }
