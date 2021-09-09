@@ -122,5 +122,41 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             Assert.AreEqual("vonvonjlooksjhffttteinseinsdreizwoyyqnnsneuninhaltxxbeiangriffunterwassergedruecktywabosxletztergegnerstandnulachtdreinuluhrmarquantonjotaneunachtseyhsdreiyzwozwonulgradyachtsmystossenachxeknsviermbfaelltynnnnnnooovierysichteinsnull".ToEnigmaText(), clear);
         }
+
+        [TestMethod]
+        public void TestArchivedGeocacheGC2NC68()
+        {
+            var enigma = EnigmaFactory.CreateEnigma(
+                new[] { RotorType.II, RotorType.VII, RotorType.VIII },
+                new[] { 25, 19, 1 },
+                ReflectorType.B,
+                new Plugboard("AS BK DU EZ FO HN IX LV QY RW"));
+
+            Trace.WriteLine($"enigma: {enigma}");
+
+            var cipherText = "OSVKA IYZML IIGEN HCAVF RUBSC INRPS YBEQB KPWCX CMZHO KONZM RGOCP TZNBL ALERX ZTVAR WEPUO FRVZI GYZXL WVLXE YXIKJ FDPLD RHFAB EANKJ FWWOB NKFPO RLUUU";
+
+            for (int i = 0; i < 26; i++)
+            {
+                for (int j = 0; j < 26; j++)
+                {
+                    for (int k = 0; k < 26; k++)
+                    {
+                        enigma.SetStartPositions(new[] { (char)('A' + i), (char)('A' + j), (char)('A' + k) });
+
+                        var clearText = enigma.Transform(cipherText);
+
+                        if (clearText.Contains("NORTHFIVE"))
+                        {
+                            Trace.WriteLine($"[start: {new string(enigma.StartPositions)}]: {clearText}");
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            Assert.Fail();
+        }
     }
 }
