@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -136,9 +139,16 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var cipherText = "OSVKA IYZML IIGEN HCAVF RUBSC INRPS YBEQB KPWCX CMZHO KONZM RGOCP TZNBL ALERX ZTVAR WEPUO FRVZI GYZXL WVLXE YXIKJ FDPLD RHFAB EANKJ FWWOB NKFPO RLUUU";
 
+            var result = string.Empty;
+            var minEpsilon = 0d;
+
             var sw = new Stopwatch();
 
             sw.Start();
+
+            var targetIC = 0.0667;
+
+            var hits = new List<(double ic, double dIC, string text)>();
 
             for (int i = 0; i < 26; i++)
             {
@@ -148,19 +158,34 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                     {
                         enigma.SetStartPositions(new[] { (char)('A' + i), (char)('A' + j), (char)('A' + k) });
 
-                        var clearText = enigma.Transform(cipherText);                        
+                        var clearText = enigma.Transform(cipherText);
 
-                        if (clearText.Contains("NORTHFIVE"))
+                        // Calculate IoC
+                        var ic = clearText.GroupBy(x => x).Sum(x => x.Count() * (x.Count() - 1d) / (clearText.Length * (clearText.Length - 1d)));
+
+                        var dIC = Math.Abs(ic - targetIC);
+
+                        hits.Add((ic, dIC, clearText));
+
+                        var epsilon = ic * dIC;
+
+                        if (epsilon > minEpsilon)
                         {
-                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: {clearText}");
+                            result = clearText;
+                            minEpsilon = epsilon;
 
-                            return;
+                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: (IoC={ic:F6} dIC={dIC:F6} ε(max)={minEpsilon:F6}) {clearText}");                            
                         }
                     }
                 }
             }
 
-            Assert.Fail();
+            //foreach (var hit in hits.OrderByDescending(x=>x.dIC*x.ic))
+            //{
+            //    Trace.WriteLine($"{(hit.ic*hit.dIC):F6} {hit.ic:F6} {hit.dIC:F6} {hit.text}");
+            //}
+
+            Assert.IsTrue(result.Contains("NORTHFIVE"));
         }
     }
 }
