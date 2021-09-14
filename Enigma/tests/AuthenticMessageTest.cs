@@ -148,6 +148,8 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var targetIC = 0.0667;
 
+            var maxIC = 0d;
+
             var hits = new List<(double ic, double dIC, string text)>();
 
             for (int i = 0; i < 26; i++)
@@ -163,27 +165,18 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                         // Calculate IoC
                         var ic = clearText.GroupBy(x => x).Sum(x => x.Count() * (x.Count() - 1d) / (clearText.Length * (clearText.Length - 1d)));
 
-                        var dIC = Math.Abs(ic - targetIC);
+                        var dIC = Math.Abs(ic - targetIC);                        
 
-                        hits.Add((ic, dIC, clearText));
-
-                        var epsilon = ic * dIC;
-
-                        if (epsilon > minEpsilon)
+                        if (ic > maxIC)
                         {
                             result = clearText;
-                            minEpsilon = epsilon;
+                            maxIC = ic;
 
-                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: (IoC={ic:F6} dIC={dIC:F6} ε(max)={minEpsilon:F6}) {clearText}");                            
+                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: (IC={ic:F6} {clearText}");                            
                         }
                     }
                 }
             }
-
-            //foreach (var hit in hits.OrderByDescending(x=>x.dIC*x.ic))
-            //{
-            //    Trace.WriteLine($"{(hit.ic*hit.dIC):F6} {hit.ic:F6} {hit.dIC:F6} {hit.text}");
-            //}
 
             Assert.IsTrue(result.Contains("NORTHFIVE"));
         }
