@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\src\Enigma\Enigma.csproj" />
   </ItemGroup>
 
 </Project>

@@ -23,7 +23,7 @@ namespace net.SicTransit.Crypto.Enigma
             StartPositions = Rotors.Select(x => x.Position).ToArray();
         }
 
-        public void AttachDevices()
+        private void AttachDevices()
         {
             Keyboard.Attach(PlugBoard, Direction.Forward);
 
@@ -62,8 +62,6 @@ namespace net.SicTransit.Crypto.Enigma
 
         public void SetStartPositions(char[] positions)
         {
-            if (positions == null) throw new ArgumentNullException(nameof(positions));
-
             if (positions.Length != Rotors.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(positions));
