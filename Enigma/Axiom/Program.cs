@@ -22,7 +22,7 @@ While we're poisoning pigeons in the park
 
             var e0 = new Enigma(
                 new Plugboard(""),
-                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I, 13), GearBox.SelectRotor(Enums.RotorType.III, 17), GearBox.SelectRotor(Enums.RotorType.II, 23) },
+                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },
                 GearBox.SelectReflector(Enums.ReflectorType.B));
 
             e0.SetStartPositions(new[] { 'Q', 'W', 'E' });
@@ -45,43 +45,50 @@ While we're poisoning pigeons in the park
 
             Parallel.ForEach(rotorConfigs, c =>
             {
-                for (int rs1 = 1; rs1 < 27; rs1++)
-                {
-                    for (int rs2 = 1; rs2 < 27; rs2++)
-                    {
-                        var maxIC = 0d;
+                //for (int rs1 = 1; rs1 < 27; rs1++)
+                //{
+                //    for (int rs2 = 1; rs2 < 27; rs2++)
+                //    {
+                //        for (int rs3 = 1; rs3 < 27; rs3++)
+                //        {
+                            var maxIC = 0d;
 
-                        var enigma = new Enigma(
-                            new Plugboard(),
-                            new Rotor[] { GearBox.SelectRotor(c[0], rs1), GearBox.SelectRotor(c[1], rs2), GearBox.SelectRotor(c[2]) },
-                            GearBox.SelectReflector(Enums.ReflectorType.B));
-
-                        for (int s1 = 0; s1 < 26; s1++)
-                        {
-                            for (int s2 = 0; s2 < 26; s2++)
-                            {
-                                for (int s3 = 0; s3 < 26; s3++)
+                            var enigma = new Enigma(
+                                new Plugboard(),
+                                new Rotor[]
                                 {
+                                    GearBox.SelectRotor(c[0]), GearBox.SelectRotor(c[1]),
+                                    GearBox.SelectRotor(c[2])
+                                },
+                                GearBox.SelectReflector(Enums.ReflectorType.B));
 
-                                    enigma.SetStartPositions(new[] { (char)('A' + s1), (char)('A' + s2), (char)('A' + s3) });
-
-                                    var clearText = enigma.Transform(cipherText);
-                                    var ic = clearText.IndexOfCoincidence();
-
-                                    if (ic > maxIC)
+                            for (int s1 = 0; s1 < 26; s1++)
+                            {
+                                for (int s2 = 0; s2 < 26; s2++)
+                                {
+                                    for (int s3 = 0; s3 < 26; s3++)
                                     {
-                                        Log.Information($"{ic:F5} {clearText.Substring(0, 20)} {enigma}");
-                                        maxIC = ic;
 
-                                        solutions.Add((ic, enigma.ToString()));
+                                        enigma.SetStartPositions(new[]
+                                            {(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)});
+
+                                        var clearText = enigma.Transform(cipherText);
+                                        var ic = clearText.IndexOfCoincidence();
+
+                                        if (ic > maxIC)
+                                        {
+                                            Log.Information($"{ic:F5} {clearText.Substring(0, 20)} {enigma}");
+                                            maxIC = ic;
+
+                                            solutions.Add((ic, enigma.ToString()));
+                                        }
+
                                     }
-
                                 }
                             }
-                        }
-                    }
-                }
-
+                //        }
+                //    }
+                //}
 
             });
 

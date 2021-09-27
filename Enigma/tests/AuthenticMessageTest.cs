@@ -1,7 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -166,6 +169,56 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             }
 
             Assert.IsTrue(result.Contains("NORTHFIVE"));
+        }
+
+        [TestMethod]
+        public void TestNumericalRotors()
+        {
+
+            var reflector = new Reflector(ReflectorType.None, "8765432109", "1234567890");
+
+            var solutions = new HashSet<string>();
+            foreach (var r1 in Enumerable.Range(1,10))
+            {
+                var rotor1 = new Rotor(RotorType.None, "7623019485", new[] { '4' }, r1, "1234567890", true);
+
+                foreach (var r2 in Enumerable.Range(1, 10))
+                {
+                    var rotor2 = new Rotor(RotorType.None, "5642073918", new[] { '0' }, r2, "1234567890", true);
+                    foreach (var r3 in Enumerable.Range(1, 10))
+                    {
+                        var rotor3 = new Rotor(RotorType.None, "4127905638", new[] { '4' }, r3, "1234567890", true);
+
+                        var enigma = new Enigma(new Plugboard(), new[] { rotor1, rotor2, rotor3 }, reflector);
+
+                        foreach (var p1 in "1234567890")
+                        {
+                            foreach (var p2 in "1234567890")
+                            {
+                                foreach (var p3 in "1234567890")
+                                {
+                                    enigma.SetStartPositions(new[] {p1, p2, p3});
+
+                                    var clearText = enigma.Transform("97° 08.407 E 98° 78.005".DigitsOnly());
+
+                                    if (Regex.IsMatch(clearText, @"^595\d{4}173\d{4}$"))
+                                    {
+                                        solutions.Add(clearText);
+
+                                        Trace.WriteLine($"{clearText} {enigma}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var solution in solutions)
+            {
+                Trace.WriteLine(solution);
+            }
+
         }
     }
 }

@@ -84,20 +84,19 @@ namespace net.SicTransit.Crypto.Enigma
 
         public char Display => Lampboard.Lit;
 
+        public string Transform(string s)
+        {
+            return new string(Type(s).ToArray());
+        }
+
         public IEnumerable<char> Type(IEnumerable<char> chars)
         {
             foreach (var c in chars)
             {
-                if (TypeCharacter(c))
-                {
-                    yield return Display;
-                }
-            }
-        }
+                TypeCharacter(c);
 
-        public string Transform(string s)
-        {
-            return new string(Type(s).ToArray());
+                yield return Display;
+            }
         }
 
         public void Type(char c)
@@ -105,22 +104,13 @@ namespace net.SicTransit.Crypto.Enigma
             TypeCharacter(c);
         }
 
-        private bool TypeCharacter(char c)
+        private void TypeCharacter(char c)
         {
             var input = char.ToUpper(c);
 
-            if (input >= 'A' && input <= 'Z')
-            {
-                Keyboard.Tick(true);
+            Keyboard.Tick(true);
 
-                Keyboard.Transpose(input, Direction.Forward);
-
-                return true;
-            }
-
-            Log.Debug($"filtered unsupported character: {c}");
-
-            return false;
+            Keyboard.Transpose(input, Direction.Forward);
         }
 
         public override string ToString()

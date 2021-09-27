@@ -7,24 +7,22 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Reflector : EnigmaDevice
     {
+        private readonly ReflectorType reflectorType;
         private readonly Dictionary<char, char> wires = new();
 
-        public Reflector(ReflectorType reflectorType, string wiring)
+        public Reflector(ReflectorType reflectorType, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         {
-            if (wiring == null) throw new ArgumentNullException(nameof(wiring));
-            if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
+            if (letters == null) throw new ArgumentNullException(nameof(letters));
+            if (wiring == null || wiring.Length != letters.Length) throw new ArgumentOutOfRangeException(nameof(wiring));
+            this.reflectorType = reflectorType;
 
-            for (var i = 0; i < 26; i++)
+            for (var i = 0; i < wiring.Length; i++)
             {
-                wires.Add((char)('A' + i), wiring[i]);
+                wires.Add(letters[i], wiring[i]);
             }
-
-            ReflectorType = reflectorType;
         }
 
         public override EncoderType EncoderType => EncoderType.Reflector;
-
-        public ReflectorType ReflectorType { get; }
 
         public override void Transpose(char c, Direction direction)
         {
@@ -33,7 +31,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} {ReflectorType}";
+            return $"{base.ToString()} {reflectorType}";
         }
     }
 }
