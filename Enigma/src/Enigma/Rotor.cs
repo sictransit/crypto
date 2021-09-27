@@ -1,12 +1,8 @@
 ﻿using net.SicTransit.Crypto.Enigma.Abstract;
 using net.SicTransit.Crypto.Enigma.Enums;
-using net.SicTransit.Crypto.Enigma.Extensions;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Serilog.Events;
 
 namespace net.SicTransit.Crypto.Enigma
 {
@@ -69,7 +65,7 @@ namespace net.SicTransit.Crypto.Enigma
         public override void Tick(bool turn = false)
         {
             var notched = notches.Contains(Position);
-            
+
             base.Tick(notched);
 
             if (turn || doubleStep && !inhibitDoubleStep && notched)
