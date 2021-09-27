@@ -65,7 +65,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             enigma.SetStartPositions(new[] { 'V', 'Z', 'U' });
 
-            var clearText = enigma.Transform(cipherText);
+            var clearText = enigma.Transform(cipherText.ToEnigmaText());
 
             Trace.WriteLine($"clear: {clearText}");
 
@@ -86,7 +86,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             enigma.SetStartPositions(new[] { 'A', 'L', 'B' });
 
-            var firstPartClear = enigma.Transform(firstPartCipher);
+            var firstPartClear = enigma.Transform(firstPartCipher.ToEnigmaText());
 
             Trace.WriteLine($"clear: {firstPartClear}");
 
@@ -98,7 +98,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             enigma.SetStartPositions(new[] { 'D', 'S', 'L' });
 
-            var secondPartClear = enigma.Transform(secondPartCipher);
+            var secondPartClear = enigma.Transform(secondPartCipher.ToEnigmaText());
 
             Trace.WriteLine($"clear: {secondPartClear}");
 
@@ -115,11 +115,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var cipher = "NCZW VUSX PNYM INHZ XMQX SFWX WLKJ AHSH NMCO CCAK UQPM KCSM HKSE INJU SBLK IOSX CKUB HMLL XCSJ USRR DVKO HULX WCCB GVLI YXEO AHXR HKKF VDRE WEZL XOBA FGYU JQUK GRTV UKAM EURB VEKS UHHV OYHA BCJW MAKL FKLM YFVN RIZR VVRT KOFD ANJM OLBG FFLE OPRG TFLV RHOW OPBE KVWM UQFM PWPA RMFH AGKX IIBG";
 
-            Trace.WriteLine($"cipher: {cipher.ToEnigmaText().GroupedBy(4)}");
+            Trace.WriteLine($"cipher: {cipher}");
 
             enigma.SetStartPositions(new[] { 'A', 'N', 'J', 'V' });
 
-            var clear = enigma.Transform(cipher.GroupedBy(4));
+            var clear = enigma.Transform(cipher.ToEnigmaText());
 
             Trace.WriteLine($"clear: {clear}");
 
@@ -153,7 +153,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                     {
                         enigma.SetStartPositions(new[] { (char)('A' + i), (char)('A' + j), (char)('A' + k) });
 
-                        var clearText = enigma.Transform(cipherText);
+                        var clearText = enigma.Transform(cipherText.ToEnigmaText());
 
                         var ic = clearText.IndexOfCoincidence();
 

@@ -59,21 +59,6 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         }
 
         [TestMethod]
-        public void TestFilterInvalidChars()
-        {
-            var enigma = EnigmaFactory.CreateEnigma();
-
-            var eightBitAscii = new string(Enumerable.Range(0, 256).Select(x => (char)x).ToArray());
-            const string cipherText = "FUVEPUMWARVQKEFGHGDIJFMFXIMRENATHDMCEVOQHIUWRRGYSJAD";
-
-            Assert.AreEqual(cipherText, enigma.Transform(eightBitAscii));
-
-            enigma.Reset();
-
-            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", enigma.Transform(cipherText));
-        }
-
-        [TestMethod]
         public void TestStartPositions()
         {
             var enigma = EnigmaFactory.CreateEnigma();
@@ -120,7 +105,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var enigma = EnigmaFactory.CreateEnigma();
 
-            Assert.AreEqual(cipherText, enigma.Transform(clearText));
+            Assert.AreEqual(cipherText, enigma.Transform(clearText.ToEnigmaText()));
 
             enigma.Reset();
 
