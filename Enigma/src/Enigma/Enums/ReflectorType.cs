@@ -2,7 +2,7 @@
 {
     public enum ReflectorType
     {
-        None,
+        Custom,
         A,
         B,
         ThinB,

@@ -33,7 +33,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} wiring={(string.IsNullOrEmpty(wiring) ? "()" : wiring)}";
+            return $"{base.ToString()} {(string.IsNullOrEmpty(wiring) ? "()" : wiring)}";
         }
     }
 }

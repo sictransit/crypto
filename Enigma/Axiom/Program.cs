@@ -1,5 +1,6 @@
 ﻿using net.SicTransit.Crypto.Enigma.Extensions;
 using Serilog;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ While we're poisoning pigeons in the park
 
             e0.SetStartPositions(new[] { 'Q', 'W', 'E' });
 
-            var cipherText = e0.Transform(ClearText);
+            var cipherText = e0.Transform(new string(ClearText.ToUpperInvariant().Where(c => char.IsLetter(c)).ToArray()));
 
             Log.Information($"Cipher text: {cipherText}");
 
@@ -41,60 +42,59 @@ While we're poisoning pigeons in the park
                 new[] { Enums.RotorType.III, Enums.RotorType.II, Enums.RotorType.I },
             };
 
-            var solutions = new List<(double, string)>();
+            var solutions = new ConcurrentBag<(double, string, string)>();
 
             Parallel.ForEach(rotorConfigs, c =>
             {
-                //for (int rs1 = 1; rs1 < 27; rs1++)
-                //{
-                //    for (int rs2 = 1; rs2 < 27; rs2++)
-                //    {
-                //        for (int rs3 = 1; rs3 < 27; rs3++)
-                //        {
-                var maxIC = 0d;
-
-                var enigma = new Enigma(
-                    new Plugboard(),
-                    new Rotor[]
+            for (int rs1 = 1; rs1 < 27; rs1++)
+            {
+                    for (int rs2 = 1; rs2 < 27; rs2++)
                     {
-                                    GearBox.SelectRotor(c[0]), GearBox.SelectRotor(c[1]),
-                                    GearBox.SelectRotor(c[2])
-                    },
-                    GearBox.SelectReflector(Enums.ReflectorType.B));
-
-                for (int s1 = 0; s1 < 26; s1++)
-                {
-                    for (int s2 = 0; s2 < 26; s2++)
-                    {
-                        for (int s3 = 0; s3 < 26; s3++)
+                        for (int rs3 = 1; rs3 < 27; rs3++)
                         {
+                            var maxIC = 0d;
 
-                            enigma.SetStartPositions(new[]
-                                {(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)});
+                            var enigma = new Enigma(
+                                new Plugboard(),
+                                new Rotor[]
+                                {
+                                    GearBox.SelectRotor(c[0],rs1), GearBox.SelectRotor(c[1],rs2),
+                                    GearBox.SelectRotor(c[2],rs3)
+                                },
+                                GearBox.SelectReflector(Enums.ReflectorType.B));
 
-                            var clearText = enigma.Transform(cipherText);
-                            var ic = clearText.IndexOfCoincidence();
-
-                            if (ic > maxIC)
+                            for (int s1 = 0; s1 < 26; s1++)
                             {
-                                Log.Information($"{ic:F5} {clearText.Substring(0, 20)} {enigma}");
-                                maxIC = ic;
+                                for (int s2 = 0; s2 < 26; s2++)
+                                {
+                                    for (int s3 = 0; s3 < 26; s3++)
+                                    {
 
-                                solutions.Add((ic, enigma.ToString()));
+                                        enigma.SetStartPositions(new[]
+                                            {(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)});
+
+                                        var clearText = enigma.Transform(cipherText);
+                                        var ic = clearText.IndexOfCoincidence();
+
+                                        if (ic > maxIC)
+                                        {
+                                            Log.Debug($"{ic:F5} {clearText.Substring(0, 20)} {enigma}");
+                                            maxIC = ic;
+
+                                            solutions.Add((ic, enigma.ToString(), clearText));
+                                        }
+
+                                    }
+                                }
                             }
-
                         }
                     }
                 }
-                //        }
-                //    }
-                //}
-
             });
 
-            foreach (var solution in solutions.OrderByDescending(x => x.Item1))
+            foreach (var solution in solutions.OrderByDescending(x => x.Item1).Take(20))
             {
-                Log.Information($"ic: {solution.Item1} {solution.Item2}");
+                Log.Information($"ic: {solution.Item1} {solution.Item2} {solution.Item3}");
             }
         }
     }

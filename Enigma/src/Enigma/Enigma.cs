@@ -117,7 +117,7 @@ namespace net.SicTransit.Crypto.Enigma
         {
             var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}").Reverse());
 
-            return $"{Reflector} - {r} - {PlugBoard}";
+            return $"[{GetType().Name}] {Reflector} ↔ {r} ↔ {PlugBoard}";
         }
     }
 }

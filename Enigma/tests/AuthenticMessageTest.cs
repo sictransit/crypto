@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -174,17 +171,26 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
-            var reflector = new Reflector(ReflectorType.None, "0987654321", "1234567890");
+            var reflector = new Reflector(ReflectorType.Custom, "0987654321", "1234567890");
 
-            var rotor1 = new Rotor(RotorType.None, "7623019485", new[] { '1' }, 1, "1234567890", true);
-            var rotor2 = new Rotor(RotorType.None, "5642073918", new[] { '1' }, 1, "1234567890", true);
-            var rotor3 = new Rotor(RotorType.None, "4127905638", new[] { '1' }, 1, "1234567890", true);
+            foreach (var noDoubleStep in new[] { true, false })
+            {
+                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", noDoubleStep);
+                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", noDoubleStep);
+                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", noDoubleStep);
 
-            var enigma = new Enigma(new Plugboard(), new[] { rotor1, rotor2, rotor3 }, reflector);
+                var enigma = new Enigma(new Plugboard(), new[] { rotor1, rotor2, rotor3 }, reflector);
 
-            enigma.SetStartPositions(new[] { '7', '5', '4' });
+                enigma.SetStartPositions(new[] { '1', '1', '1' });
+                Trace.WriteLine($"BEFORE: {enigma}");
 
-            Assert.AreEqual("0", enigma.Transform("1"));
+                var cipherText = "1111111111";
+
+                Trace.WriteLine($"{cipherText} → {enigma.Transform(cipherText)} (no double-step: {noDoubleStep})");
+
+                Trace.WriteLine($"AFTER: {enigma}");
+
+            }
         }
     }
 }

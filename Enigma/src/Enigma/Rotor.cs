@@ -12,6 +12,7 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly Dictionary<char, char> reverseWiring = new();
         private readonly HashSet<char> notches;
         private readonly RotorType rotorType;
+        private readonly string wiring;
         private readonly int ringSetting;
         private readonly string letters;
         private readonly bool inhibitDoubleStep;
@@ -31,6 +32,7 @@ namespace net.SicTransit.Crypto.Enigma
 
             this.notches = new HashSet<char>(notches);
             this.rotorType = rotorType;
+            this.wiring = wiring;
             this.ringSetting = ringSetting;
             this.letters = letters;
             this.inhibitDoubleStep = inhibitDoubleStep;
@@ -87,7 +89,8 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            return $"{base.ToString()} {rotorType} rs={letters[ringSetting - 1]}";
+            var w = rotorType == RotorType.Custom ? $"{letters} → {wiring}" : rotorType.ToString();
+            return $"{base.ToString()} {w} rs={letters[ringSetting - 1]} n={string.Join(',', notches)} pos={Position}";
         }
     }
 }
