@@ -175,7 +175,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
-            var crib = new Regex(@"^595[\d]{4}17[\d]{5}$", RegexOptions.Compiled);
+            var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
 
             var cipherText = "97084079878005";
 
@@ -190,36 +190,64 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 var r3 = r / 100 % 10;
 
                 var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, r1 + 1, "1234567890", true);
-                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, r2 + 1, "1234567890", true);
-                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, r3 + 1, "1234567890", true);
+                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, r1 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
+                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, r2 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
+                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, r3 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
 
-                var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
-
-                foreach (var s1 in startPositions)
+                foreach (var x1 in new[] { rotor1, rotor2, rotor3 })
                 {
-                    foreach (var s2 in startPositions)
+                    foreach (var x2 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1 }))
                     {
-                        foreach (var s3 in startPositions)
+                        foreach (var x3 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1, x2 }))
                         {
-                            enigma.SetStartPositions(new[] { s1, s2, s3 });
+                            var enigma = new Enigma(reflector, new[] { x1, x2, x3 }, new Plugboard(), TickBehaviour.PostEncoding);
 
-                            var clearText = enigma.Transform(cipherText);
-
-                            if (crib.IsMatch(clearText))
+                            foreach (var s1 in startPositions)
                             {
-                                solutions.Add(clearText);
-                                Trace.WriteLine($"{enigma} → {clearText}");
+                                foreach (var s2 in startPositions)
+                                {
+                                    foreach (var s3 in startPositions)
+                                    {
+                                        enigma.SetStartPositions(new[] { s1, s2, s3 });
+
+                                        var clearText = enigma.Transform(cipherText);
+
+                                        if (crib.IsMatch(clearText))
+                                        {
+                                            solutions.Add(clearText);
+                                            Trace.WriteLine($"{enigma} → {clearText}");
+                                        }
+                                    }
+                                }
                             }
+
                         }
                     }
                 }
+
             });
 
             foreach (var solution in solutions.Distinct().OrderBy(x => x))
             {
                 Trace.WriteLine(solution);
             }
+        }
+
+        [TestMethod]
+        public void TestNumericalRotors2()
+        {
+            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
+            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+
+            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard(), TickBehaviour.PostEncoding);
+
+            var cipherText = "11111111111111";
+
+            Trace.WriteLine($"BEFORE: {enigma}");
+            Trace.WriteLine($"{cipherText} → {enigma.Transform(cipherText)}");
+            Trace.WriteLine($"AFTER: {enigma}");
         }
     }
 }
