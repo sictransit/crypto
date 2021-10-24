@@ -23,7 +23,7 @@ While we're poisoning pigeons in the park
 
             var e0 = new Enigma(
                 GearBox.SelectReflector(Enums.ReflectorType.B),
-                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },                
+                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },
                 new Plugboard(""));
 
             e0.SetStartPositions(new[] { 'Q', 'W', 'E' });
@@ -58,7 +58,7 @@ While we're poisoning pigeons in the park
                                 GearBox.SelectReflector(Enums.ReflectorType.B),
                                 new Rotor[]
                                 {
-                                    GearBox.SelectRotor(c[0],rs1), 
+                                    GearBox.SelectRotor(c[0],rs1),
                                     GearBox.SelectRotor(c[1],rs2),
                                     GearBox.SelectRotor(c[2],rs3)
                                 },

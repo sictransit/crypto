@@ -45,7 +45,7 @@ namespace net.SicTransit.Crypto.Enigma
             {
                 Log.Information($"input: {input.GroupedBy()}");
 
-                var output = enigma.Transform(o.Input);
+                var output = enigma.Transform(input);
 
                 Log.Information($"output: {output.GroupedBy()}");
             }

@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -175,67 +176,47 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         public void TestNumericalRotors()
         {
             var crib = new Regex(@"^595[\d]{4}17[\d]{5}$", RegexOptions.Compiled);
+
             var cipherText = "97084079878005";
-            
-            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
 
             var startPositions = "0123456789".ToCharArray();
 
-            var solutions = new HashSet<string>();
+            var solutions = new ConcurrentBag<string>();
 
-            var c1 = "7623019485";
-            var c2 = "5642073918";
-            var c3 = "4127905638";
-
-            foreach (var x1 in new[] { c1, c2, c3 })
+            Parallel.For(0, 1000, r =>
             {
-                foreach (var x2 in new[] { c1, c2, c3 }.Except(new[] { c1 }))
+                var r1 = r % 10;
+                var r2 = r / 10 % 10;
+                var r3 = r / 100 % 10;
+
+                var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
+                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, r1 + 1, "1234567890", true);
+                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, r2 + 1, "1234567890", true);
+                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, r3 + 1, "1234567890", true);
+
+                var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
+
+                foreach (var s1 in startPositions)
                 {
-
-                    foreach (var x3 in new[] { c1, c2, c3 }.Except(new[] { c1, c2 }))
+                    foreach (var s2 in startPositions)
                     {
-
-
-                        for (int r = 0; r < 999; r++)
+                        foreach (var s3 in startPositions)
                         {
+                            enigma.SetStartPositions(new[] { s1, s2, s3 });
 
-                            var r1 = r % 10;
-                            var r2 = r / 10 % 10;
-                            var r3 = r / 100 % 10;
+                            var clearText = enigma.Transform(cipherText);
 
-                            var rotor1 = new Rotor(RotorType.Custom, x1, new[] { '4' }, r1 + 1, "1234567890", true);
-                            var rotor2 = new Rotor(RotorType.Custom, x2, new[] { '0' }, r2 + 1, "1234567890", true);
-                            var rotor3 = new Rotor(RotorType.Custom, x3, new[] { '4' }, r3 + 1, "1234567890", true);
-
-                            var enigma = new Enigma(reflector, new[] { rotor3, rotor2, rotor1 }, new Plugboard());
-
-                            foreach (var s1 in startPositions)
+                            if (crib.IsMatch(clearText))
                             {
-                                foreach (var s2 in startPositions)
-                                {
-                                    foreach (var s3 in startPositions)
-                                    {
-                                        enigma.SetStartPositions(new[] { s1, s2, s3 });
-
-                                        var clearText = enigma.Transform(cipherText);
-
-                                        if (crib.IsMatch(clearText))
-                                        {
-                                            solutions.Add(clearText);
-                                            Trace.WriteLine($"{enigma} → {clearText}");
-                                        }
-                                    }
-                                }
+                                solutions.Add(clearText);
+                                Trace.WriteLine($"{enigma} → {clearText}");
                             }
                         }
                     }
-
                 }
-            }
+            });
 
-
-
-            foreach (var solution in solutions)
+            foreach (var solution in solutions.Distinct().OrderBy(x => x))
             {
                 Trace.WriteLine(solution);
             }

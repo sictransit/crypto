@@ -29,7 +29,7 @@ namespace net.SicTransit.Crypto.Enigma
 
             PlugBoard.Attach(Rotors[^1], Direction.Forward);
 
-            for (var i = Rotors.Length-1; i > 0; i--)
+            for (var i = Rotors.Length - 1; i > 0; i--)
             {
                 Rotors[i].Attach(Rotors[i - 1], Direction.Forward);
             }
@@ -38,7 +38,7 @@ namespace net.SicTransit.Crypto.Enigma
 
             Reflector.Attach(Rotors[0], Direction.Reverse);
 
-            for (var i = 0; i < Rotors.Length-1; i++)
+            for (var i = 0; i < Rotors.Length - 1; i++)
             {
                 Rotors[i].Attach(Rotors[i + 1], Direction.Reverse);
             }
