@@ -46,7 +46,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestKnownCipherTextC543()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.IV, RotorType.V }, ReflectorType.C);
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.V, RotorType.IV, RotorType.III }, ReflectorType.C);
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "SIBKMIAZDAWKVEAVCZEVOJADCC";
@@ -63,7 +63,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         {
             var enigma = EnigmaFactory.CreateEnigma();
 
-            enigma.SetStartPositions(new[] { 'A', 'B', 'C' });
+            enigma.SetStartPositions(new[] { 'C', 'B', 'A' });
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "IOLIXDTUDYJEJKTXXFNAYEZQHI";
@@ -78,7 +78,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestRingSettings()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { 1, 2, 3 });
+            var enigma = EnigmaFactory.CreateEnigma(new[] { 3, 2, 1 });
 
             const string clearText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string cipherText = "CAHZZUIFVTNDVZGJOKPXLUUNOD";
@@ -148,7 +148,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestMultipleNotches()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.VI, RotorType.VII, RotorType.VIII }, ReflectorType.B);
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.VIII, RotorType.VII, RotorType.VI }, ReflectorType.B);
 
             Assert.IsTrue(enigma.Rotors.All(r => r.Position == 'A'));
 
@@ -163,9 +163,9 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             Assert.AreEqual(cipher.ToEnigmaText(), sb.ToString());
 
-            Assert.AreEqual('A', enigma.Rotors[0].Position);
+            Assert.AreEqual('A', enigma.Rotors[2].Position);
             Assert.AreEqual('P', enigma.Rotors[1].Position);
-            Assert.AreEqual('B', enigma.Rotors[2].Position);
+            Assert.AreEqual('B', enigma.Rotors[0].Position);
         }
 
         [TestMethod]
@@ -175,7 +175,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             var enigma = EnigmaFactory.CreateEnigma();
 
-            Assert.AreEqual('A', enigma.Rotors.First().Position);
+            Assert.AreEqual('A', enigma.Rotors.Last().Position);
 
             var enumerator = enigma.Type(s);
 
@@ -183,13 +183,13 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
 
             Assert.AreEqual(10, clearText.Count());
 
-            Assert.AreEqual((char)('A' + 10), enigma.Rotors.First().Position);
+            Assert.AreEqual((char)('A' + 10), enigma.Rotors.Last().Position);
 
             clearText = enumerator.Skip(1).Take(10);
 
             Assert.AreEqual(10, clearText.Count());
 
-            Assert.AreEqual((char)('A' + 10 + 1 + 10), enigma.Rotors.First().Position);
+            Assert.AreEqual((char)('A' + 10 + 1 + 10), enigma.Rotors.Last().Position);
         }
     }
 }

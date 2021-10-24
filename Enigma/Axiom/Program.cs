@@ -22,9 +22,9 @@ While we're poisoning pigeons in the park
             Logging.EnableLogging(Serilog.Events.LogEventLevel.Information);
 
             var e0 = new Enigma(
-                new Plugboard(""),
-                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },
-                GearBox.SelectReflector(Enums.ReflectorType.B));
+                GearBox.SelectReflector(Enums.ReflectorType.B),
+                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },                
+                new Plugboard(""));
 
             e0.SetStartPositions(new[] { 'Q', 'W', 'E' });
 
@@ -46,8 +46,8 @@ While we're poisoning pigeons in the park
 
             Parallel.ForEach(rotorConfigs, c =>
             {
-            for (int rs1 = 1; rs1 < 27; rs1++)
-            {
+                for (int rs1 = 1; rs1 < 27; rs1++)
+                {
                     for (int rs2 = 1; rs2 < 27; rs2++)
                     {
                         for (int rs3 = 1; rs3 < 27; rs3++)
@@ -55,13 +55,14 @@ While we're poisoning pigeons in the park
                             var maxIC = 0d;
 
                             var enigma = new Enigma(
-                                new Plugboard(),
+                                GearBox.SelectReflector(Enums.ReflectorType.B),
                                 new Rotor[]
                                 {
-                                    GearBox.SelectRotor(c[0],rs1), GearBox.SelectRotor(c[1],rs2),
+                                    GearBox.SelectRotor(c[0],rs1), 
+                                    GearBox.SelectRotor(c[1],rs2),
                                     GearBox.SelectRotor(c[2],rs3)
                                 },
-                                GearBox.SelectReflector(Enums.ReflectorType.B));
+                                new Plugboard());
 
                             for (int s1 = 0; s1 < 26; s1++)
                             {

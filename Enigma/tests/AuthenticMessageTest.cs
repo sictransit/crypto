@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -11,7 +14,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestEnigmaInstructionManual1930()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.I, RotorType.II }, new[] { 22, 13, 24 }, ReflectorType.A, new Plugboard("AM FI NV PS TU WZ"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.I, RotorType.III }, new[] { 24, 13, 22 }, ReflectorType.A, new Plugboard("AM FI NV PS TU WZ"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -31,7 +34,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 var b = (char)('A' + ((i / 26) % 26));
                 var c = (char)('A' + ((i / 26 / 26) % 26));
 
-                enigma.SetStartPositions(new[] { a, b, c, });
+                enigma.SetStartPositions(new[] { c, b, a });
 
                 var clearText = enigma.Transform(cipherText);
 
@@ -44,15 +47,15 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 }
             }
 
-            Assert.AreEqual('L', enigma.StartPositions[0]);
+            Assert.AreEqual('L', enigma.StartPositions[2]);
             Assert.AreEqual('B', enigma.StartPositions[1]);
-            Assert.AreEqual('A', enigma.StartPositions[2]);
+            Assert.AreEqual('A', enigma.StartPositions[0]);
         }
 
         [TestMethod]
         public void TestScharnhorst1943()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.VIII, RotorType.VI, RotorType.III }, new[] { 13, 8, 1 }, ReflectorType.B, new Plugboard("AN EZ HK IJ LR MQ OT PV SW UX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.VI, RotorType.VIII }, new[] { 1, 8, 13 }, ReflectorType.B, new Plugboard("AN EZ HK IJ LR MQ OT PV SW UX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -60,7 +63,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             Trace.WriteLine($"cipher: {cipherText}");
 
-            enigma.SetStartPositions(new[] { 'V', 'Z', 'U' });
+            enigma.SetStartPositions(new[] { 'U', 'Z', 'V' });
 
             var clearText = enigma.Transform(cipherText.ToEnigmaText());
 
@@ -73,7 +76,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestOperationBarbarossa1941()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.V, RotorType.IV, RotorType.II }, new[] { 12, 21, 2 }, ReflectorType.B, new Plugboard("AV BS CG DL FU HZ IN KM OW RX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.IV, RotorType.V }, new[] { 2, 21, 12 }, ReflectorType.B, new Plugboard("AV BS CG DL FU HZ IN KM OW RX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -81,7 +84,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             Trace.WriteLine($"cipher: {firstPartCipher}");
 
-            enigma.SetStartPositions(new[] { 'A', 'L', 'B' });
+            enigma.SetStartPositions(new[] { 'B', 'L', 'A' });
 
             var firstPartClear = enigma.Transform(firstPartCipher.ToEnigmaText());
 
@@ -93,7 +96,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             Trace.WriteLine($"cipher: {secondPartCipher}");
 
-            enigma.SetStartPositions(new[] { 'D', 'S', 'L' });
+            enigma.SetStartPositions(new[] { 'L', 'S', 'D' });
 
             var secondPartClear = enigma.Transform(secondPartCipher.ToEnigmaText());
 
@@ -106,7 +109,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestU264KapitänleutnantHartwigLooks1942()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.I, RotorType.IV, RotorType.II, RotorType.Beta }, new[] { 22, 1, 1, 1 }, ReflectorType.ThinB, new Plugboard("AT BL DF GJ HM NW OP QY RZ VX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.Beta, RotorType.II, RotorType.IV, RotorType.I }, new[] { 1, 1, 1, 22 }, ReflectorType.ThinB, new Plugboard("AT BL DF GJ HM NW OP QY RZ VX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -114,7 +117,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             Trace.WriteLine($"cipher: {cipher}");
 
-            enigma.SetStartPositions(new[] { 'A', 'N', 'J', 'V' });
+            enigma.SetStartPositions(new[] { 'V', 'J', 'N', 'A' });
 
             var clear = enigma.Transform(cipher.ToEnigmaText());
 
@@ -127,8 +130,8 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         public void TestArchivedGeocacheGC2NC68()
         {
             var enigma = EnigmaFactory.CreateEnigma(
-                new[] { RotorType.II, RotorType.VII, RotorType.VIII },
-                new[] { 25, 19, 1 },
+                new[] { RotorType.VIII, RotorType.VII, RotorType.II },
+                new[] { 1, 19, 25 },
                 ReflectorType.B,
                 new Plugboard("AS BK DU EZ FO HN IX LV QY RW"));
 
@@ -171,25 +174,70 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
-            var reflector = new Reflector(ReflectorType.Custom, "0987654321", "1234567890");
+            var crib = new Regex(@"^595[\d]{4}17[\d]{5}$", RegexOptions.Compiled);
+            var cipherText = "97084079878005";
+            
+            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
 
-            foreach (var noDoubleStep in new[] { true, false })
+            var startPositions = "0123456789".ToCharArray();
+
+            var solutions = new HashSet<string>();
+
+            var c1 = "7623019485";
+            var c2 = "5642073918";
+            var c3 = "4127905638";
+
+            foreach (var x1 in new[] { c1, c2, c3 })
             {
-                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", noDoubleStep);
-                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", noDoubleStep);
-                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", noDoubleStep);
+                foreach (var x2 in new[] { c1, c2, c3 }.Except(new[] { c1 }))
+                {
 
-                var enigma = new Enigma(new Plugboard(), new[] { rotor1, rotor2, rotor3 }, reflector);
+                    foreach (var x3 in new[] { c1, c2, c3 }.Except(new[] { c1, c2 }))
+                    {
 
-                enigma.SetStartPositions(new[] { '1', '1', '1' });
-                Trace.WriteLine($"BEFORE: {enigma}");
 
-                var cipherText = "1111111111";
+                        for (int r = 0; r < 999; r++)
+                        {
 
-                Trace.WriteLine($"{cipherText} → {enigma.Transform(cipherText)} (no double-step: {noDoubleStep})");
+                            var r1 = r % 10;
+                            var r2 = r / 10 % 10;
+                            var r3 = r / 100 % 10;
 
-                Trace.WriteLine($"AFTER: {enigma}");
+                            var rotor1 = new Rotor(RotorType.Custom, x1, new[] { '4' }, r1 + 1, "1234567890", true);
+                            var rotor2 = new Rotor(RotorType.Custom, x2, new[] { '0' }, r2 + 1, "1234567890", true);
+                            var rotor3 = new Rotor(RotorType.Custom, x3, new[] { '4' }, r3 + 1, "1234567890", true);
 
+                            var enigma = new Enigma(reflector, new[] { rotor3, rotor2, rotor1 }, new Plugboard());
+
+                            foreach (var s1 in startPositions)
+                            {
+                                foreach (var s2 in startPositions)
+                                {
+                                    foreach (var s3 in startPositions)
+                                    {
+                                        enigma.SetStartPositions(new[] { s1, s2, s3 });
+
+                                        var clearText = enigma.Transform(cipherText);
+
+                                        if (crib.IsMatch(clearText))
+                                        {
+                                            solutions.Add(clearText);
+                                            Trace.WriteLine($"{enigma} → {clearText}");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
+
+            foreach (var solution in solutions)
+            {
+                Trace.WriteLine(solution);
             }
         }
     }

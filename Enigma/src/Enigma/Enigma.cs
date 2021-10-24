@@ -8,7 +8,7 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Enigma
     {
-        public Enigma(Plugboard plugboard, Rotor[] rotors, Reflector reflector)
+        public Enigma(Reflector reflector, Rotor[] rotors, Plugboard plugboard)
         {
             PlugBoard = plugboard ?? throw new ArgumentNullException(nameof(plugboard));
             Rotors = rotors ?? throw new ArgumentNullException(nameof(rotors));
@@ -27,23 +27,23 @@ namespace net.SicTransit.Crypto.Enigma
         {
             Keyboard.Attach(PlugBoard, Direction.Forward);
 
-            PlugBoard.Attach(Rotors[0], Direction.Forward);
+            PlugBoard.Attach(Rotors[^1], Direction.Forward);
 
-            for (var i = 0; i < Rotors.Length - 1; i++)
+            for (var i = Rotors.Length-1; i > 0; i--)
             {
-                Rotors[i].Attach(Rotors[i + 1], Direction.Forward);
+                Rotors[i].Attach(Rotors[i - 1], Direction.Forward);
             }
 
-            Rotors[^1].Attach(Reflector, Direction.Forward);
+            Rotors[0].Attach(Reflector, Direction.Forward);
 
-            Reflector.Attach(Rotors[^1], Direction.Reverse);
+            Reflector.Attach(Rotors[0], Direction.Reverse);
 
-            for (var i = Rotors.Length - 1; i > 0; i--)
+            for (var i = 0; i < Rotors.Length-1; i++)
             {
-                Rotors[i].Attach(Rotors[i - 1], Direction.Reverse);
+                Rotors[i].Attach(Rotors[i + 1], Direction.Reverse);
             }
 
-            Rotors[0].Attach(PlugBoard, Direction.Reverse);
+            Rotors[^1].Attach(PlugBoard, Direction.Reverse);
 
             PlugBoard.Attach(Lampboard, Direction.Reverse);
         }
@@ -115,7 +115,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override string ToString()
         {
-            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}").Reverse());
+            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}"));
 
             return $"[{GetType().Name}] {Reflector} ↔ {r} ↔ {PlugBoard}";
         }
