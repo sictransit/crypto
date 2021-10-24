@@ -16,7 +16,7 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly int ringSetting;
         private readonly string letters;
         private readonly DoubleStepBehaviour doubleStepBehaviour;
-        private bool doubleStep;
+        private bool canDoubleStep;
         private int position;
         private readonly int length;
 
@@ -56,7 +56,7 @@ namespace net.SicTransit.Crypto.Enigma
         {
             base.Attach(e, direction);
 
-            doubleStep = ForwardDevice?.EncoderType == EncoderType.Rotor && ReverseDevice?.EncoderType == EncoderType.Rotor;
+            canDoubleStep = ForwardDevice?.EncoderType == EncoderType.Rotor && ReverseDevice?.EncoderType == EncoderType.Rotor;
         }
 
         public void SetPosition(char p)
@@ -66,14 +66,14 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override void Tick(bool turn = false)
         {
-            var notched = notches.Contains(Position);
+            var notched = notches.Contains(Position);            
 
-            base.Tick(notched);
-
-            if (turn || doubleStep && notched && (doubleStepBehaviour == DoubleStepBehaviour.Standard))
+            if (turn || canDoubleStep && notched && (doubleStepBehaviour == DoubleStepBehaviour.Standard))
             {
                 position = (position + 1) % length;
             }
+
+            base.Tick(notched);
         }
 
         public override void Transpose(char c, Direction direction)

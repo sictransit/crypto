@@ -174,7 +174,8 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
-            var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
+            var crib = new Regex(@"^595[\d]{11}$", RegexOptions.Compiled);
+            //var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
 
             var cipherText = "97084079878005";
 
@@ -187,36 +188,34 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
             var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
 
-            foreach (var x1 in new[] { rotor1, rotor2, rotor3 })
+            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard(), TickBehaviour.PostEncoding);
+
+            foreach (var s1 in startPositions)
             {
-                foreach (var x2 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1 }))
+                foreach (var s2 in startPositions)
                 {
-                    foreach (var x3 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1, x2 }))
+                    foreach (var s3 in startPositions)
                     {
-                        var enigma = new Enigma(reflector, new[] { x1, x2, x3 }, new Plugboard(), TickBehaviour.PostEncoding);
+                        enigma.SetStartPositions(new[] { s1, s2, s3 });
 
-                        foreach (var s1 in startPositions)
+                        string clearText = string.Empty;
+
+                        foreach (var c in cipherText)
                         {
-                            foreach (var s2 in startPositions)
-                            {
-                                foreach (var s3 in startPositions)
-                                {
-                                    enigma.SetStartPositions(new[] { s1, s2, s3 });
+                            enigma.Type(c);
 
-                                    var clearText = enigma.Transform(cipherText);
-
-                                    if (crib.IsMatch(clearText))
-                                    {
-                                        solutions.Add(clearText);
-                                        Trace.WriteLine($"{enigma} → {clearText}");
-                                    }
-                                }
-                            }
+                            clearText = $"{clearText}{enigma.Display}";
                         }
 
+                        if (crib.IsMatch(clearText))
+                        {
+                            solutions.Add(clearText);
+                            Trace.WriteLine($"{enigma} → {clearText}");
+                        }
                     }
                 }
             }
+
 
             foreach (var solution in solutions.Distinct().OrderBy(x => x))
             {
