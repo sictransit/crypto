@@ -174,8 +174,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
-            var crib = new Regex(@"^595[\d]{11}$", RegexOptions.Compiled);
-            //var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
+            var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
 
             var cipherText = "97084079878005";
 
@@ -184,11 +183,11 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             var solutions = new ConcurrentBag<string>();
 
             var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
-            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
-            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", false);
+            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", false);
+            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", false);
 
-            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard(), TickBehaviour.PostEncoding);
+            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
 
             foreach (var s1 in startPositions)
             {
@@ -198,40 +197,38 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                     {
                         enigma.SetStartPositions(new[] { s1, s2, s3 });
 
-                        string clearText = string.Empty;
+                        var before = enigma.ToString();
 
-                        foreach (var c in cipherText)
-                        {
-                            enigma.Type(c);
-
-                            clearText = $"{clearText}{enigma.Display}";
-                        }
+                        var clearText = enigma.Transform(cipherText);
 
                         if (crib.IsMatch(clearText))
                         {
                             solutions.Add(clearText);
-                            Trace.WriteLine($"{enigma} → {clearText}");
+                            Trace.WriteLine($"{before}");
+                            Trace.WriteLine($"→ {clearText}");
+                            Trace.WriteLine($"{enigma}");
                         }
                     }
                 }
             }
 
-
             foreach (var solution in solutions.Distinct().OrderBy(x => x))
             {
                 Trace.WriteLine(solution);
             }
+
+            Assert.IsTrue(solutions.Any());
         }
 
         [TestMethod]
         public void TestNumericalRotors2()
         {
             var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
-            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
-            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", false);
+            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", false);
+            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", false);
 
-            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard(), TickBehaviour.PostEncoding);
+            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
 
             var cipherText = "11111111111111";
 

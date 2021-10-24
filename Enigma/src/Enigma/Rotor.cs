@@ -15,14 +15,14 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly string wiring;
         private readonly int ringSetting;
         private readonly string letters;
-        private readonly DoubleStepBehaviour doubleStepBehaviour;
-        private bool canDoubleStep;
+        private readonly bool doubleSteppingEnabled;
+        private bool isMiddleRotor;
         private int position;
         private readonly int length;
 
         private readonly Dictionary<char, int> characterSet = new();
 
-        public Rotor(RotorType rotorType, string wiring, IReadOnlyCollection<char> notches, int ringSetting = 1, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", DoubleStepBehaviour doubleStepBehaviour = DoubleStepBehaviour.Standard)
+        public Rotor(RotorType rotorType, string wiring, IReadOnlyCollection<char> notches, int ringSetting = 1, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", bool enableDoubleStepping = true)
         {
             if (notches == null || !notches.Any()) throw new ArgumentOutOfRangeException(nameof(notches));
             if (letters == null) throw new ArgumentNullException(nameof(letters));
@@ -35,12 +35,12 @@ namespace net.SicTransit.Crypto.Enigma
             this.wiring = wiring;
             this.ringSetting = ringSetting - 1;
             this.letters = letters;
-            this.doubleStepBehaviour = doubleStepBehaviour;
+            this.doubleSteppingEnabled = enableDoubleStepping;
 
             for (var i = 0; i < wiring.Length; i++)
             {
-                forwardWiring.Add(wiring[i], letters[i]);
-                reverseWiring.Add(letters[i], wiring[i]);
+                forwardWiring.Add(letters[i], wiring[i]);
+                reverseWiring.Add(wiring[i], letters[i]);
                 characterSet.Add(letters[i], i);
             }
         }
@@ -56,7 +56,7 @@ namespace net.SicTransit.Crypto.Enigma
         {
             base.Attach(e, direction);
 
-            canDoubleStep = ForwardDevice?.EncoderType == EncoderType.Rotor && ReverseDevice?.EncoderType == EncoderType.Rotor;
+            isMiddleRotor = ForwardDevice?.EncoderType == EncoderType.Rotor && ReverseDevice?.EncoderType == EncoderType.Rotor;
         }
 
         public void SetPosition(char p)
@@ -66,21 +66,37 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override void Tick(bool turn = false)
         {
-            var notched = notches.Contains(Position);            
+            var isNotched = notches.Contains(Position);
 
-            if (turn || canDoubleStep && notched && (doubleStepBehaviour == DoubleStepBehaviour.Standard))
+            if (doubleSteppingEnabled) // Standard Enigma!
             {
-                position = (position + 1) % length;
-            }
+                // A rotor between rotors will "double-step", i.e. turn when notched regardless of if the previous rotor turned or not.
+                var doubleStep = isNotched && isMiddleRotor;
 
-            base.Tick(notched);
+                if (turn || doubleStep)
+                {
+                    position = (position + 1) % length;
+                }
+
+                base.Tick(isNotched); // If notched, turn the next rotor in sequence.
+            }
+            else // Strange Geocaching Enigma implementation!
+            {
+                if (turn)
+                {
+                    position = (position + 1) % length;
+                }
+
+                // When disabling double-stepping, only turn the next rotor if this is notched AND the previous rotor turned it.
+                base.Tick(isNotched && turn);
+            }
         }
 
         public override void Transpose(char c, Direction direction)
         {
             var cIn = letters[(characterSet[c] + position - ringSetting + length) % length];
 
-            var transposed = direction == Direction.Forward ? reverseWiring[cIn] : forwardWiring[cIn];
+            var transposed = direction == Direction.Forward ? forwardWiring[cIn] : reverseWiring[cIn];
 
             var cOut = letters[(characterSet[transposed] - position + ringSetting + length) % length];
 
@@ -90,6 +106,7 @@ namespace net.SicTransit.Crypto.Enigma
         public override string ToString()
         {
             var w = rotorType == RotorType.Custom ? $"{letters} → {wiring}" : rotorType.ToString();
+
             return $"{base.ToString()} {w} rs={letters[ringSetting]} n={string.Join(',', notches)} pos={Position}";
         }
     }

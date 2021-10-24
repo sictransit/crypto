@@ -8,12 +8,9 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Enigma
     {
-        private readonly TickBehaviour tickBehaviour;
-
-        public Enigma(Reflector reflector, Rotor[] rotors, Plugboard plugboard, TickBehaviour tickBehaviour = TickBehaviour.Standard)
+        public Enigma(Reflector reflector, Rotor[] rotors, Plugboard plugboard)
         {
             PlugBoard = plugboard ?? throw new ArgumentNullException(nameof(plugboard));
-            this.tickBehaviour = tickBehaviour;
             Rotors = rotors ?? throw new ArgumentNullException(nameof(rotors));
             Reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
 
@@ -109,19 +106,9 @@ namespace net.SicTransit.Crypto.Enigma
 
         private void TypeCharacter(char c)
         {
-            switch (tickBehaviour)
-            {
-                case TickBehaviour.Standard:
-                    Keyboard.Tick(true);
-                    Keyboard.Transpose(char.ToUpper(c), Direction.Forward);
-                    break;
-                case TickBehaviour.PostEncoding:
-                    Keyboard.Transpose(char.ToUpper(c), Direction.Forward);
-                    Keyboard.Tick(true);
-                    break;
-                default:
-                    break;
-            }
+            Keyboard.Tick(true);
+
+            Keyboard.Transpose(char.ToUpper(c), Direction.Forward);
         }
 
         public override string ToString()
