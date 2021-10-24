@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
 {
@@ -183,49 +182,41 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var solutions = new ConcurrentBag<string>();
 
-            Parallel.For(0, 1000, r =>
+            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
+            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", DoubleStepBehaviour.Inhibit);
+
+            foreach (var x1 in new[] { rotor1, rotor2, rotor3 })
             {
-                var r1 = r % 10;
-                var r2 = r / 10 % 10;
-                var r3 = r / 100 % 10;
-
-                var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-                var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, r1 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
-                var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, r2 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
-                var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, r3 + 1, "1234567890", DoubleStepBehaviour.Inhibit);
-
-                foreach (var x1 in new[] { rotor1, rotor2, rotor3 })
+                foreach (var x2 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1 }))
                 {
-                    foreach (var x2 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1 }))
+                    foreach (var x3 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1, x2 }))
                     {
-                        foreach (var x3 in new[] { rotor1, rotor2, rotor3 }.Except(new[] { x1, x2 }))
+                        var enigma = new Enigma(reflector, new[] { x1, x2, x3 }, new Plugboard(), TickBehaviour.PostEncoding);
+
+                        foreach (var s1 in startPositions)
                         {
-                            var enigma = new Enigma(reflector, new[] { x1, x2, x3 }, new Plugboard(), TickBehaviour.PostEncoding);
-
-                            foreach (var s1 in startPositions)
+                            foreach (var s2 in startPositions)
                             {
-                                foreach (var s2 in startPositions)
+                                foreach (var s3 in startPositions)
                                 {
-                                    foreach (var s3 in startPositions)
+                                    enigma.SetStartPositions(new[] { s1, s2, s3 });
+
+                                    var clearText = enigma.Transform(cipherText);
+
+                                    if (crib.IsMatch(clearText))
                                     {
-                                        enigma.SetStartPositions(new[] { s1, s2, s3 });
-
-                                        var clearText = enigma.Transform(cipherText);
-
-                                        if (crib.IsMatch(clearText))
-                                        {
-                                            solutions.Add(clearText);
-                                            Trace.WriteLine($"{enigma} → {clearText}");
-                                        }
+                                        solutions.Add(clearText);
+                                        Trace.WriteLine($"{enigma} → {clearText}");
                                     }
                                 }
                             }
-
                         }
+
                     }
                 }
-
-            });
+            }
 
             foreach (var solution in solutions.Distinct().OrderBy(x => x))
             {
