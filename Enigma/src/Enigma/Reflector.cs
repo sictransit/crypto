@@ -1,5 +1,6 @@
 ﻿using net.SicTransit.Crypto.Enigma.Abstract;
 using net.SicTransit.Crypto.Enigma.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 
@@ -7,36 +8,37 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Reflector : EnigmaDevice
     {
-        private readonly ReflectorType reflectorType;
-        private readonly string wiring;
-        private readonly string letters;
         private readonly Dictionary<char, char> wires = new();
 
-        public Reflector(ReflectorType reflectorType, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        public Reflector(string name, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         {
             if (letters == null) throw new ArgumentNullException(nameof(letters));
             if (wiring == null || wiring.Length != letters.Length) throw new ArgumentOutOfRangeException(nameof(wiring));
-            this.reflectorType = reflectorType;
-            this.wiring = wiring;
-            this.letters = letters;
+
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+
             for (var i = 0; i < wiring.Length; i++)
             {
                 wires.Add(letters[i], wiring[i]);
             }
         }
 
+        public Reflector(ReflectorType reflectorType, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            : this(reflectorType.ToString(), wiring, letters)
+        {
+        }
+
         public override EncoderType EncoderType => EncoderType.Reflector;
+
+        public override string Name { get; }
 
         public override void Transpose(char c, Direction direction)
         {
-            base.Transpose(wires[c], Direction.Reverse);
-        }
+            var cOut = wires[c];
 
-        public override string ToString()
-        {
-            var w = reflectorType == ReflectorType.Custom ? $"{letters} → {wiring}" : reflectorType.ToString();
+            Log.Debug($"{c}→{Name}→{cOut}");
 
-            return $"{base.ToString()} {w}";
+            base.Transpose(cOut, Direction.Reverse);
         }
     }
 }

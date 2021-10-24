@@ -1,9 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
-using System.Collections.Concurrent;
+using Serilog;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
@@ -174,67 +173,29 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestNumericalRotors()
         {
+            Logging.EnableLogging(Serilog.Events.LogEventLevel.Debug);
+
             var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
 
             var cipherText = "97084079878005";
 
-            var startPositions = "0123456789".ToCharArray();
-
-            var solutions = new ConcurrentBag<string>();
-
-            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", false);
-            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", false);
-            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", false);
+            var reflector = new Reflector("X(A)", "8765432109", "1234567890");
+            var rotor1 = new Rotor("R(I)", "7623019485", new[] { '4' }, 1, "1234567890", false);
+            var rotor2 = new Rotor("R(II)", "5642073918", new[] { '0' }, 1, "1234567890", false);
+            var rotor3 = new Rotor("R(III)", "4127905638", new[] { '4' }, 1, "1234567890", false);
 
             var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
 
-            foreach (var s1 in startPositions)
-            {
-                foreach (var s2 in startPositions)
-                {
-                    foreach (var s3 in startPositions)
-                    {
-                        enigma.SetStartPositions(new[] { s1, s2, s3 });
+            enigma.SetStartPositions(new[] { '2', '0', '0' });
 
-                        var before = enigma.ToString();
+            Log.Information($"{enigma}");
 
-                        var clearText = enigma.Transform(cipherText);
+            var clearText = enigma.Transform(cipherText);
 
-                        if (crib.IsMatch(clearText))
-                        {
-                            solutions.Add(clearText);
-                            Trace.WriteLine($"{before}");
-                            Trace.WriteLine($"→ {clearText}");
-                            Trace.WriteLine($"{enigma}");
-                        }
-                    }
-                }
-            }
+            Assert.IsTrue(crib.IsMatch(clearText));
 
-            foreach (var solution in solutions.Distinct().OrderBy(x => x))
-            {
-                Trace.WriteLine(solution);
-            }
-
-            Assert.IsTrue(solutions.Any());
-        }
-
-        [TestMethod]
-        public void TestNumericalRotors2()
-        {
-            var reflector = new Reflector(ReflectorType.Custom, "8765432109", "1234567890");
-            var rotor1 = new Rotor(RotorType.Custom, "7623019485", new[] { '4' }, 1, "1234567890", false);
-            var rotor2 = new Rotor(RotorType.Custom, "5642073918", new[] { '0' }, 1, "1234567890", false);
-            var rotor3 = new Rotor(RotorType.Custom, "4127905638", new[] { '4' }, 1, "1234567890", false);
-
-            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
-
-            var cipherText = "11111111111111";
-
-            Trace.WriteLine($"BEFORE: {enigma}");
-            Trace.WriteLine($"{cipherText} → {enigma.Transform(cipherText)}");
-            Trace.WriteLine($"AFTER: {enigma}");
+            Log.Information($"→ {clearText}");
+            Log.Information($"{enigma}");
         }
     }
 }

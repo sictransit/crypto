@@ -11,6 +11,8 @@ namespace net.SicTransit.Crypto.Enigma.Abstract
 
         public abstract EncoderType EncoderType { get; }
 
+        public virtual string Name => EncoderType.ToString();
+
         public virtual void Transpose(char c, Direction direction)
         {
             switch (direction)
@@ -48,7 +50,7 @@ namespace net.SicTransit.Crypto.Enigma.Abstract
 
         public override string ToString()
         {
-            return $"{EncoderType}";
+            return $"{Name}";
         }
     }
 }

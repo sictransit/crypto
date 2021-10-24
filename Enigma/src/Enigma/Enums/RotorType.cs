@@ -2,7 +2,6 @@
 {
     public enum RotorType
     {
-        Custom,
         I,
         II,
         III,

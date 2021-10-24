@@ -1,5 +1,6 @@
 ﻿using net.SicTransit.Crypto.Enigma.Abstract;
 using net.SicTransit.Crypto.Enigma.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,6 @@ namespace net.SicTransit.Crypto.Enigma
         private readonly Dictionary<char, char> forwardWiring = new();
         private readonly Dictionary<char, char> reverseWiring = new();
         private readonly HashSet<char> notches;
-        private readonly RotorType rotorType;
-        private readonly string wiring;
         private readonly int ringSetting;
         private readonly string letters;
         private readonly bool doubleSteppingEnabled;
@@ -22,17 +21,16 @@ namespace net.SicTransit.Crypto.Enigma
 
         private readonly Dictionary<char, int> characterSet = new();
 
-        public Rotor(RotorType rotorType, string wiring, IReadOnlyCollection<char> notches, int ringSetting = 1, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", bool enableDoubleStepping = true)
+        public Rotor(string name, string wiring, IReadOnlyCollection<char> notches, int ringSetting = 1, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", bool enableDoubleStepping = true)
         {
             if (notches == null || !notches.Any()) throw new ArgumentOutOfRangeException(nameof(notches));
             if (letters == null) throw new ArgumentNullException(nameof(letters));
             if (wiring == null || wiring.Length != letters.Length) throw new ArgumentOutOfRangeException(nameof(wiring));
 
-            length = wiring.Length;
-
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             this.notches = new HashSet<char>(notches);
-            this.rotorType = rotorType;
-            this.wiring = wiring;
+
+            length = wiring.Length;
             this.ringSetting = ringSetting - 1;
             this.letters = letters;
             this.doubleSteppingEnabled = enableDoubleStepping;
@@ -45,12 +43,20 @@ namespace net.SicTransit.Crypto.Enigma
             }
         }
 
+        public Rotor(RotorType rotorType, string wiring, IReadOnlyCollection<char> notches, int ringSetting = 1, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", bool enableDoubleStepping = true)
+            : this(rotorType.ToString(), wiring, notches, ringSetting, letters, enableDoubleStepping)
+        {
+
+        }
+
         public Rotor(RotorType type, string wiring, char notch, int ringSetting = 1)
             : this(type, wiring, new[] { notch }, ringSetting) { }
 
         public override EncoderType EncoderType => EncoderType.Rotor;
 
         public char Position => letters[position];
+
+        public override string Name { get; }
 
         public override void Attach(EnigmaDevice e, Direction direction)
         {
@@ -100,14 +106,14 @@ namespace net.SicTransit.Crypto.Enigma
 
             var cOut = letters[(characterSet[transposed] - position + ringSetting + length) % length];
 
+            Log.Debug($"{c}({cIn})→{Name}→({transposed}){cOut}");
+
             base.Transpose(cOut, direction);
         }
 
         public override string ToString()
         {
-            var w = rotorType == RotorType.Custom ? $"{letters} → {wiring}" : rotorType.ToString();
-
-            return $"{base.ToString()} {w} rs={letters[ringSetting]} n={string.Join(',', notches)} pos={Position}";
+            return $"{base.ToString()} rs={letters[ringSetting]} n={string.Join(',', notches)} pos={Position}";
         }
     }
 }
