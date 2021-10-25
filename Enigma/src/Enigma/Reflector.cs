@@ -36,7 +36,10 @@ namespace net.SicTransit.Crypto.Enigma
         {
             var cOut = wires[c];
 
-            Log.Debug($"{c}→{Name}→{cOut}");
+            if (debugging)
+            {
+                Log.Debug($"{c}→{Name}→{cOut}");
+            }
 
             base.Transpose(cOut, Direction.Reverse);
         }

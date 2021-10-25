@@ -115,7 +115,7 @@ Morbi porta, lorem at molestie fermentum, mi arcu commodo diam, ut gravida arcu 
         [TestMethod]
         public void TestPlugBoard()
         {
-            var plugboard = new Plugboard("AZ MN");
+            var plugboard = new FoBoard("AZ MN");
 
             var enigma = EnigmaFactory.CreateEnigma(plugboard);
 

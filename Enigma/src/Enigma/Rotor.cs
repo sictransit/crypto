@@ -33,7 +33,7 @@ namespace net.SicTransit.Crypto.Enigma
             length = wiring.Length;
             this.ringSetting = ringSetting - 1;
             this.letters = letters;
-            this.doubleSteppingEnabled = enableDoubleStepping;
+            doubleSteppingEnabled = enableDoubleStepping;
 
             for (var i = 0; i < wiring.Length; i++)
             {
@@ -77,9 +77,7 @@ namespace net.SicTransit.Crypto.Enigma
             if (doubleSteppingEnabled) // Standard Enigma!
             {
                 // A rotor between rotors will "double-step", i.e. turn when notched regardless of if the previous rotor turned or not.
-                var doubleStep = isNotched && isMiddleRotor;
-
-                if (turn || doubleStep)
+                if (turn || isNotched && isMiddleRotor)
                 {
                     position = (position + 1) % length;
                 }
@@ -106,7 +104,10 @@ namespace net.SicTransit.Crypto.Enigma
 
             var cOut = letters[(characterSet[transposed] - position + ringSetting + length) % length];
 
-            Log.Debug($"{c}({cIn})→{Name}→({transposed}){cOut}");
+            if (debugging)
+            {
+                Log.Debug($"{c}({cIn})→{Name}→({transposed}){cOut}");
+            }
 
             base.Transpose(cOut, direction);
         }

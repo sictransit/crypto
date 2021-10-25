@@ -10,7 +10,10 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override void Transpose(char c, Direction direction)
         {
-            Log.Debug($"{Name}→{c}");
+            if (debugging)
+            {
+                Log.Debug($"{Name}→{c}");
+            }
 
             base.Transpose(c, direction);
         }

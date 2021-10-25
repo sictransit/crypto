@@ -8,13 +8,16 @@ namespace net.SicTransit.Crypto.Enigma
     {
         public override EncoderType EncoderType => EncoderType.Lampboard;
 
-        public char Lit { get; private set; }
+        public char Lamp { get; private set; }
 
         public override void Transpose(char c, Direction direction)
         {
-            Lit = c;
+            Lamp = c;
 
-            Log.Debug($"{c}→{Name}");
+            if (debugging)
+            {
+                Log.Debug($"{c}→{Name}");
+            }
 
             base.Transpose(c, direction);
         }

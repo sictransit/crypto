@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace net.SicTransit.Crypto.Enigma
 {
-    public class Plugboard : EnigmaDevice
+    public class FoBoard : EnigmaDevice
     {
         private readonly Dictionary<char, char> wires = new();
 
         private readonly string wiring;
 
-        public Plugboard(string wiring = null)
+        public FoBoard(string wiring = null)
         {
             this.wiring = wiring ?? string.Empty;
 
@@ -29,7 +29,10 @@ namespace net.SicTransit.Crypto.Enigma
         {
             var cOut = wires.TryGetValue(c, out var t) ? t : c;
 
-            Log.Debug($"{c}→{Name}→{cOut}");
+            if (debugging)
+            {
+                Log.Debug($"{c}→{Name}→{cOut}");
+            }
 
             base.Transpose(cOut, direction);
         }
