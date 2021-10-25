@@ -2,7 +2,9 @@
 using net.SicTransit.Crypto.Enigma.Enums;
 using net.SicTransit.Crypto.Enigma.Extensions;
 using Serilog;
+using System;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace net.SicTransit.Crypto.Enigma.Tests
@@ -171,18 +173,18 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         }
 
         [TestMethod]
-        public void TestNumericalRotors()
+        public void TestNumericalGeocacheMyst()
         {
             Logging.EnableLogging(Serilog.Events.LogEventLevel.Debug);
 
             var crib = new Regex(@"^59(?:50|51|52)[\d]{3}17(?:34|35|36|37|38|39|40)[\d]{3}$", RegexOptions.Compiled);
 
-            var cipherText = "97084079878005";
+            var cipherText = Encoding.UTF8.GetString(Convert.FromBase64String("OTcwODQwNzk4NzgwMDU="));
 
-            var reflector = new Reflector("X(A)", "8765432109", "1234567890");
-            var rotor1 = new Rotor("R(I)", "7623019485", new[] { '4' }, 1, "1234567890", false);
-            var rotor2 = new Rotor("R(II)", "5642073918", new[] { '0' }, 1, "1234567890", false);
-            var rotor3 = new Rotor("R(III)", "4127905638", new[] { '4' }, 1, "1234567890", false);
+            var reflector = new Reflector("X(A)", Encoding.UTF8.GetString(Convert.FromBase64String("ODc2NTQzMjEwOQ==")), "1234567890");
+            var rotor1 = new Rotor("R(I)", Encoding.UTF8.GetString(Convert.FromBase64String("NzYyMzAxOTQ4NQ==")), new[] { '4' }, 1, "1234567890", false);
+            var rotor2 = new Rotor("R(II)", Encoding.UTF8.GetString(Convert.FromBase64String("NTY0MjA3MzkxOA==")), new[] { '0' }, 1, "1234567890", false);
+            var rotor3 = new Rotor("R(III)", Encoding.UTF8.GetString(Convert.FromBase64String("NDEyNzkwNTYzOA==")), new[] { '4' }, 1, "1234567890", false);
 
             var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
 
