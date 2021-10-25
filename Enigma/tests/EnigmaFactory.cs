@@ -10,7 +10,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             return CreateEnigma(new[] { RotorType.III, RotorType.II, RotorType.I }, new[] { 1, 1, 1 }, ReflectorType.B);
         }
 
-        public static Enigma CreateEnigma(FoBoard plugboard)
+        public static Enigma CreateEnigma(Plugboard plugboard)
         {
             return CreateEnigma(new[] { RotorType.III, RotorType.II, RotorType.I }, new[] { 1, 1, 1 }, ReflectorType.B, plugboard);
         }
@@ -25,13 +25,13 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             return CreateEnigma(rotorTypes, new[] { 1, 1, 1 }, reflectorType);
         }
 
-        public static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, FoBoard plugboard = null)
+        public static Enigma CreateEnigma(RotorType[] rotorTypes, int[] ringSettings, ReflectorType reflectorType, Plugboard plugboard = null)
         {
             var reflector = GearBox.SelectReflector(reflectorType);
 
             var rotors = rotorTypes.Select((t, i) => GearBox.SelectRotor(t, ringSettings[i])).ToArray();
 
-            return new Enigma(reflector, rotors, plugboard ?? new FoBoard());
+            return new Enigma(reflector, rotors, plugboard ?? new Plugboard());
         }
     }
 }

@@ -13,7 +13,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestEnigmaInstructionManual1930()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.I, RotorType.III }, new[] { 24, 13, 22 }, ReflectorType.A, new FoBoard("AM FI NV PS TU WZ"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.I, RotorType.III }, new[] { 24, 13, 22 }, ReflectorType.A, new Plugboard("AM FI NV PS TU WZ"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -54,7 +54,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestScharnhorst1943()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.VI, RotorType.VIII }, new[] { 1, 8, 13 }, ReflectorType.B, new FoBoard("AN EZ HK IJ LR MQ OT PV SW UX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.VI, RotorType.VIII }, new[] { 1, 8, 13 }, ReflectorType.B, new Plugboard("AN EZ HK IJ LR MQ OT PV SW UX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -75,7 +75,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestOperationBarbarossa1941()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.IV, RotorType.V }, new[] { 2, 21, 12 }, ReflectorType.B, new FoBoard("AV BS CG DL FU HZ IN KM OW RX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.IV, RotorType.V }, new[] { 2, 21, 12 }, ReflectorType.B, new Plugboard("AV BS CG DL FU HZ IN KM OW RX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -108,7 +108,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestU264KapitänleutnantHartwigLooks1942()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.Beta, RotorType.II, RotorType.IV, RotorType.I }, new[] { 1, 1, 1, 22 }, ReflectorType.ThinB, new FoBoard("AT BL DF GJ HM NW OP QY RZ VX"));
+            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.Beta, RotorType.II, RotorType.IV, RotorType.I }, new[] { 1, 1, 1, 22 }, ReflectorType.ThinB, new Plugboard("AT BL DF GJ HM NW OP QY RZ VX"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -132,7 +132,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 new[] { RotorType.VIII, RotorType.VII, RotorType.II },
                 new[] { 1, 19, 25 },
                 ReflectorType.B,
-                new FoBoard("AS BK DU EZ FO HN IX LV QY RW"));
+                new Plugboard("AS BK DU EZ FO HN IX LV QY RW"));
 
             Trace.WriteLine($"enigma: {enigma}");
 
@@ -184,7 +184,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             var rotor2 = new Rotor("R(II)", "5642073918", new[] { '0' }, 1, "1234567890", false);
             var rotor3 = new Rotor("R(III)", "4127905638", new[] { '4' }, 1, "1234567890", false);
 
-            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new FoBoard());
+            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
 
             enigma.SetStartPositions(new[] { '2', '0', '0' });
 

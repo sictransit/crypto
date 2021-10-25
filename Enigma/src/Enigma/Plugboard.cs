@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace net.SicTransit.Crypto.Enigma
 {
-    public class FoBoard : EnigmaDevice
+    public class Plugboard : EnigmaDevice
     {
         private readonly Dictionary<char, char> wires = new();
 
         private readonly string wiring;
 
-        public FoBoard(string wiring = null)
+        public Plugboard(string wiring = null)
         {
             this.wiring = wiring ?? string.Empty;
 

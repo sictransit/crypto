@@ -28,7 +28,7 @@ namespace net.SicTransit.Crypto.Enigma
 
         private static void Encrypt(Options o)
         {
-            var plugboard = new FoBoard(string.Join(' ', o.PlugBoard));
+            var plugboard = new Plugboard(string.Join(' ', o.PlugBoard));
 
             var rotors = o.Rotors.Select(Enum.Parse<RotorType>)
                 .Select((x, i) => GearBox.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
