@@ -17,6 +17,7 @@ And maybe we'll do in a squirrel or two
 While we're poisoning pigeons in the park
 ";
 
+        // TODO: This is just a test, to try a brute-force approach with IoC.
         public static void Main(string[] args)
         {
             Logging.EnableLogging(Serilog.Events.LogEventLevel.Information);
