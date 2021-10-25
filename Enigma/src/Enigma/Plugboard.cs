@@ -27,7 +27,10 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override void Transpose(char c, Direction direction)
         {
-            var cOut = wires.TryGetValue(c, out var t) ? t : c;
+            if (!wires.TryGetValue(c, out var cOut))
+            {
+                cOut = c;
+            }
 
             if (debugging)
             {
