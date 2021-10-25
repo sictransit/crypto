@@ -34,7 +34,7 @@ namespace net.SicTransit.Crypto.Enigma
                 .Select((x, i) => GearBox.SelectRotor(x, o.RingSettings.ToArray()[i])).ToArray();
             var reflector = GearBox.SelectReflector(Enum.Parse<ReflectorType>(o.Reflector));
 
-            var enigma = new Enigma(plugboard, rotors, reflector);
+            var enigma = new Enigma(reflector, rotors, plugboard);
             enigma.SetStartPositions(o.StartPositions.ToArray());
 
             Log.Information(enigma.ToString());
@@ -45,7 +45,7 @@ namespace net.SicTransit.Crypto.Enigma
             {
                 Log.Information($"input: {input.GroupedBy()}");
 
-                var output = enigma.Transform(o.Input);
+                var output = enigma.Transform(input);
 
                 Log.Information($"output: {output.GroupedBy()}");
             }

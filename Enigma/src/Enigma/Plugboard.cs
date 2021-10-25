@@ -1,5 +1,6 @@
 ﻿using net.SicTransit.Crypto.Enigma.Abstract;
 using net.SicTransit.Crypto.Enigma.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 
@@ -26,14 +27,22 @@ namespace net.SicTransit.Crypto.Enigma
 
         public override void Transpose(char c, Direction direction)
         {
-            var transposed = wires.TryGetValue(c, out var t) ? t : c;
+            if (!wires.TryGetValue(c, out var cOut))
+            {
+                cOut = c;
+            }
 
-            base.Transpose(transposed, direction);
+            if (debugging)
+            {
+                Log.Debug($"{c}→{Name}→{cOut}");
+            }
+
+            base.Transpose(cOut, direction);
         }
 
         public override string ToString()
         {
-            return $"{base.ToString()} wiring={(string.IsNullOrEmpty(wiring) ? "()" : wiring)}";
+            return $"{base.ToString()} {(string.IsNullOrEmpty(wiring) ? "()" : wiring)}";
         }
     }
 }

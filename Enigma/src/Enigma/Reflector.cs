@@ -1,5 +1,6 @@
 ﻿using net.SicTransit.Crypto.Enigma.Abstract;
 using net.SicTransit.Crypto.Enigma.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 
@@ -9,31 +10,38 @@ namespace net.SicTransit.Crypto.Enigma
     {
         private readonly Dictionary<char, char> wires = new();
 
-        public Reflector(ReflectorType reflectorType, string wiring)
+        public Reflector(string name, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         {
-            if (wiring == null) throw new ArgumentNullException(nameof(wiring));
-            if (wiring.Length != 26) throw new ArgumentOutOfRangeException(nameof(wiring));
+            if (letters == null) throw new ArgumentNullException(nameof(letters));
+            if (wiring == null || wiring.Length != letters.Length) throw new ArgumentOutOfRangeException(nameof(wiring));
 
-            for (var i = 0; i < 26; i++)
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+
+            for (var i = 0; i < wiring.Length; i++)
             {
-                wires.Add((char)('A' + i), wiring[i]);
+                wires.Add(letters[i], wiring[i]);
             }
+        }
 
-            ReflectorType = reflectorType;
+        public Reflector(ReflectorType reflectorType, string wiring, string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            : this(reflectorType.ToString(), wiring, letters)
+        {
         }
 
         public override EncoderType EncoderType => EncoderType.Reflector;
 
-        public ReflectorType ReflectorType { get; }
+        public override string Name { get; }
 
         public override void Transpose(char c, Direction direction)
         {
-            base.Transpose(wires[c], Direction.Reverse);
-        }
+            var cOut = wires[c];
 
-        public override string ToString()
-        {
-            return $"{base.ToString()} {ReflectorType}";
+            if (debugging)
+            {
+                Log.Debug($"{c}→{Name}→{cOut}");
+            }
+
+            base.Transpose(cOut, Direction.Reverse);
         }
     }
 }

@@ -1,15 +1,25 @@
 ﻿using net.SicTransit.Crypto.Enigma.Enums;
+using Serilog;
 using System;
 
 namespace net.SicTransit.Crypto.Enigma.Abstract
 {
     public abstract class EnigmaDevice
     {
+        protected readonly bool debugging;
+
+        public EnigmaDevice()
+        {
+            debugging = Log.IsEnabled(Serilog.Events.LogEventLevel.Debug);
+        }
+
         protected EnigmaDevice ForwardDevice { get; private set; }
 
         protected EnigmaDevice ReverseDevice { get; private set; }
 
         public abstract EncoderType EncoderType { get; }
+
+        public virtual string Name => EncoderType.ToString();
 
         public virtual void Transpose(char c, Direction direction)
         {
@@ -48,7 +58,7 @@ namespace net.SicTransit.Crypto.Enigma.Abstract
 
         public override string ToString()
         {
-            return $"{EncoderType}";
+            return $"{Name}";
         }
     }
 }

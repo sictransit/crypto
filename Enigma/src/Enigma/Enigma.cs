@@ -8,7 +8,7 @@ namespace net.SicTransit.Crypto.Enigma
 {
     public class Enigma
     {
-        public Enigma(Plugboard plugboard, Rotor[] rotors, Reflector reflector)
+        public Enigma(Reflector reflector, Rotor[] rotors, Plugboard plugboard)
         {
             PlugBoard = plugboard ?? throw new ArgumentNullException(nameof(plugboard));
             Rotors = rotors ?? throw new ArgumentNullException(nameof(rotors));
@@ -23,27 +23,27 @@ namespace net.SicTransit.Crypto.Enigma
             StartPositions = Rotors.Select(x => x.Position).ToArray();
         }
 
-        public void AttachDevices()
+        private void AttachDevices()
         {
             Keyboard.Attach(PlugBoard, Direction.Forward);
 
-            PlugBoard.Attach(Rotors[0], Direction.Forward);
-
-            for (var i = 0; i < Rotors.Length - 1; i++)
-            {
-                Rotors[i].Attach(Rotors[i + 1], Direction.Forward);
-            }
-
-            Rotors[^1].Attach(Reflector, Direction.Forward);
-
-            Reflector.Attach(Rotors[^1], Direction.Reverse);
+            PlugBoard.Attach(Rotors[^1], Direction.Forward);
 
             for (var i = Rotors.Length - 1; i > 0; i--)
             {
-                Rotors[i].Attach(Rotors[i - 1], Direction.Reverse);
+                Rotors[i].Attach(Rotors[i - 1], Direction.Forward);
             }
 
-            Rotors[0].Attach(PlugBoard, Direction.Reverse);
+            Rotors[0].Attach(Reflector, Direction.Forward);
+
+            Reflector.Attach(Rotors[0], Direction.Reverse);
+
+            for (var i = 0; i < Rotors.Length - 1; i++)
+            {
+                Rotors[i].Attach(Rotors[i + 1], Direction.Reverse);
+            }
+
+            Rotors[^1].Attach(PlugBoard, Direction.Reverse);
 
             PlugBoard.Attach(Lampboard, Direction.Reverse);
         }
@@ -62,8 +62,6 @@ namespace net.SicTransit.Crypto.Enigma
 
         public void SetStartPositions(char[] positions)
         {
-            if (positions == null) throw new ArgumentNullException(nameof(positions));
-
             if (positions.Length != Rotors.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(positions));
@@ -84,22 +82,21 @@ namespace net.SicTransit.Crypto.Enigma
             }
         }
 
-        public char Display => Lampboard.Lit;
+        public char Display => Lampboard.Lamp;
+
+        public string Transform(string s)
+        {
+            return new string(Type(s).ToArray());
+        }
 
         public IEnumerable<char> Type(IEnumerable<char> chars)
         {
             foreach (var c in chars)
             {
-                if (TypeCharacter(c))
-                {
-                    yield return Display;
-                }
-            }
-        }
+                TypeCharacter(c);
 
-        public string Transform(string s)
-        {
-            return new string(Type(s).ToArray());
+                yield return Display;
+            }
         }
 
         public void Type(char c)
@@ -107,29 +104,18 @@ namespace net.SicTransit.Crypto.Enigma
             TypeCharacter(c);
         }
 
-        private bool TypeCharacter(char c)
+        private void TypeCharacter(char c)
         {
-            var input = char.ToUpper(c);
+            Keyboard.Tick(true);
 
-            if (input >= 'A' && input <= 'Z')
-            {
-                Keyboard.Tick(true);
-
-                Keyboard.Transpose(input, Direction.Forward);
-
-                return true;
-            }
-
-            Log.Debug($"filtered unsupported character: {c}");
-
-            return false;
+            Keyboard.Transpose(char.ToUpper(c), Direction.Forward);
         }
 
         public override string ToString()
         {
-            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}").Reverse());
+            var r = string.Join(" - ", Rotors.Select((x, i) => $"{x} p0={StartPositions[i]}"));
 
-            return $"{Reflector} - {r} - {PlugBoard}";
+            return $"[{GetType().Name}] {Reflector} ↔ {r} ↔ {PlugBoard}";
         }
     }
 }
