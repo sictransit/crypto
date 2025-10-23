@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>net.SicTransit.Crypto.Enigma</RootNamespace>
     <Authors>Mikael Fredriksson</Authors>
     <Product>Enigma Console</Product>
