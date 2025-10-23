@@ -24,14 +24,14 @@ While we're poisoning pigeons in the park
 
             var e0 = new Enigma(
                 GearBox.SelectReflector(Enums.ReflectorType.B),
-                new Rotor[] { GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II) },
+                [GearBox.SelectRotor(Enums.RotorType.I), GearBox.SelectRotor(Enums.RotorType.III), GearBox.SelectRotor(Enums.RotorType.II)],
                 new Plugboard(""));
 
-            e0.SetStartPositions(new[] { 'Q', 'W', 'E' });
+            e0.SetStartPositions(['Q', 'W', 'E']);
 
-            var cipherText = e0.Transform(new string(ClearText.ToUpperInvariant().Where(c => char.IsLetter(c)).ToArray()));
+            var cipherText = e0.Transform(new string([.. ClearText.ToUpperInvariant().Where(char.IsLetter)]));
 
-            Log.Information($"Cipher text: {cipherText}");
+            Log.Information("Cipher text: {CipherText}", cipherText);
 
             var rotorConfigs = new List<Enums.RotorType[]>
             {
@@ -57,12 +57,11 @@ While we're poisoning pigeons in the park
 
                             var enigma = new Enigma(
                                 GearBox.SelectReflector(Enums.ReflectorType.B),
-                                new Rotor[]
-                                {
+                                [
                                     GearBox.SelectRotor(c[0],rs1),
                                     GearBox.SelectRotor(c[1],rs2),
                                     GearBox.SelectRotor(c[2],rs3)
-                                },
+                                ],
                                 new Plugboard());
 
                             for (int s1 = 0; s1 < 26; s1++)
@@ -72,15 +71,14 @@ While we're poisoning pigeons in the park
                                     for (int s3 = 0; s3 < 26; s3++)
                                     {
 
-                                        enigma.SetStartPositions(new[]
-                                            {(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)});
+                                        enigma.SetStartPositions([(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)]);
 
                                         var clearText = enigma.Transform(cipherText);
                                         var ic = clearText.IndexOfCoincidence();
 
                                         if (ic > maxIC)
                                         {
-                                            Log.Debug($"{ic:F5} {clearText.Substring(0, 20)} {enigma}");
+                                            Log.Debug("{IC} {ClearText} {Enigma}", ic.ToString("F5"), clearText[..20], enigma);
                                             maxIC = ic;
 
                                             solutions.Add((ic, enigma.ToString(), clearText));
@@ -96,7 +94,7 @@ While we're poisoning pigeons in the park
 
             foreach (var solution in solutions.OrderByDescending(x => x.Item1).Take(20))
             {
-                Log.Information($"ic: {solution.Item1} {solution.Item2} {solution.Item3}");
+                Log.Information("ic: {IC} {Enigma} {ClearText}", solution.Item1, solution.Item2, solution.Item3);
             }
         }
     }

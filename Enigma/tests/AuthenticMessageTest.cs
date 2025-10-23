@@ -15,15 +15,15 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestEnigmaInstructionManual1930()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.I, RotorType.III }, new[] { 24, 13, 22 }, ReflectorType.A, new Plugboard("AM FI NV PS TU WZ"));
+            var enigma = EnigmaFactory.CreateEnigma([RotorType.II, RotorType.I, RotorType.III], [24, 13, 22], ReflectorType.A, new Plugboard("AM FI NV PS TU WZ"));
 
-            Trace.WriteLine($"enigma: {enigma}");
+            Log.Information("enigma: {Enigma}", enigma);
 
             var cipherText = "GCDSE AHUGW TQGRK VLFGX UCALX VYMIG MMNMF DXTGN VHVRM MEVOU YFZSL RHDRR XFJWC FHUHM UNZEF RDISI KBGPM YVXUZ".ToEnigmaText();
 
             var exceptedClearText = "FEIND LIQEI NFANT ERIEK OLONN EBEOB AQTET XANFA NGSUE DAUSG ANGBA ERWAL DEXEN DEDRE IKMOS TWAER TSNEU STADT".ToEnigmaText();
 
-            Trace.WriteLine($"cipher: {cipherText}");
+            Log.Information("cipher: {CipherText}", cipherText);
 
             var sw = new Stopwatch();
 
@@ -35,14 +35,14 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 var b = (char)('A' + ((i / 26) % 26));
                 var c = (char)('A' + ((i / 26 / 26) % 26));
 
-                enigma.SetStartPositions(new[] { c, b, a });
+                enigma.SetStartPositions([c, b, a]);
 
                 var clearText = enigma.Transform(cipherText);
 
                 if (clearText == exceptedClearText)
                 {
-                    Trace.WriteLine($"clear: {clearText}");
-                    Trace.WriteLine($"elapsed: {sw.Elapsed}");
+                    Log.Information("clear: {ClearText}", clearText);
+                    Log.Information("elapsed: {Elapsed}", sw.Elapsed);
 
                     break;
                 }
@@ -56,19 +56,19 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestScharnhorst1943()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.III, RotorType.VI, RotorType.VIII }, new[] { 1, 8, 13 }, ReflectorType.B, new Plugboard("AN EZ HK IJ LR MQ OT PV SW UX"));
+            var enigma = EnigmaFactory.CreateEnigma([RotorType.III, RotorType.VI, RotorType.VIII], [1, 8, 13], ReflectorType.B, new Plugboard("AN EZ HK IJ LR MQ OT PV SW UX"));
 
-            Trace.WriteLine($"enigma: {enigma}");
+            Log.Information("enigma: {Enigma}", enigma);
 
             var cipherText = "YKAE NZAP MSCH ZBFO CUVM RMDP YCOF HADZ IZME FXTH FLOL PZLF GGBO TGOX GRET DWTJ IQHL MXVJ WKZU ASTR";
 
-            Trace.WriteLine($"cipher: {cipherText}");
+            Log.Information("cipher: {CipherText}", cipherText);
 
-            enigma.SetStartPositions(new[] { 'U', 'Z', 'V' });
+            enigma.SetStartPositions(['U', 'Z', 'V']);
 
             var clearText = enigma.Transform(cipherText.ToEnigmaText());
 
-            Trace.WriteLine($"clear: {clearText}");
+            Log.Information("clear: {ClearText}", clearText);
 
             Assert.AreEqual("steuerejtanafjordjanstandortquaaacccvierneunneunzwofahrtzwonulsmxxscharnhorsthco".ToEnigmaText(), clearText);
         }
@@ -77,31 +77,31 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestOperationBarbarossa1941()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.II, RotorType.IV, RotorType.V }, new[] { 2, 21, 12 }, ReflectorType.B, new Plugboard("AV BS CG DL FU HZ IN KM OW RX"));
+            var enigma = EnigmaFactory.CreateEnigma([RotorType.II, RotorType.IV, RotorType.V], [2, 21, 12], ReflectorType.B, new Plugboard("AV BS CG DL FU HZ IN KM OW RX"));
 
-            Trace.WriteLine($"enigma: {enigma}");
+            Log.Information("enigma: {Enigma}", enigma);
 
             var firstPartCipher = "EDPUD NRGYS ZRCXN UYTPO MRMBO FKTBZ REZKM LXLVE FGUEY SIOZV EQMIK UBPMM YLKLT TDEIS MDICA GYKUA CTCDO MOHWX MUUIA UBSTS LRNBZ SZWNR FXWFY SSXJZ VIJHI DISHP RKLKA YUPAD TXQSP INQMA TLPIF SVKDA SCTAC DPBOP VHJK-";
 
-            Trace.WriteLine($"cipher: {firstPartCipher}");
+            Log.Information("cipher: {FirstPartCipher}", firstPartCipher);
 
-            enigma.SetStartPositions(new[] { 'B', 'L', 'A' });
+            enigma.SetStartPositions(['B', 'L', 'A']);
 
             var firstPartClear = enigma.Transform(firstPartCipher.ToEnigmaText());
 
-            Trace.WriteLine($"clear: {firstPartClear}");
+            Log.Information("clear: {FirstPartClear}", firstPartClear);
 
             Assert.AreEqual("AUFKLXABTEILUNGXVONXKURTINOWAXKURTINOWAXNORDWESTLXSEBEZXSEBEZXUAFFLIEGERSTRASZERIQTUNGXDUBROWKIXDUBROWKIXOPOTSCHKAXOPOTSCHKAXUMXEINSAQTDREINULLXUHRANGETRETENXANGRIFFXINFXRGTX".ToEnigmaText(), firstPartClear);
 
             var secondPartCipher = "SFBWD NJUSE GQOBH KRTAR EEZMW KPPRB XOHDR OEQGB BGTQV PGVKB VVGBI MHUSZ YDAJQ IROAX SSSNR EHYGG RPISE ZBOVM QIEMM ZCYSG QDGRE RVBIL EKXYQ IRGIR QNRDN VRXCY YTNJR";
 
-            Trace.WriteLine($"cipher: {secondPartCipher}");
+            Log.Information("cipher: {SecondPartCipher}", secondPartCipher);
 
-            enigma.SetStartPositions(new[] { 'L', 'S', 'D' });
+            enigma.SetStartPositions(['L', 'S', 'D']);
 
             var secondPartClear = enigma.Transform(secondPartCipher.ToEnigmaText());
 
-            Trace.WriteLine($"clear: {secondPartClear}");
+            Log.Information("clear: {SecondPartClear}", secondPartClear);
 
             Assert.AreEqual("DREIGEHTLANGSAMABERSIQERVORWAERTSXEINSSIEBENNULLSEQSXUHRXROEMXEINSXINFRGTXDREIXAUFFLIEGERSTRASZEMITANFANGXEINSSEQSXKMXKMXOSTWXKAMENECXK".ToEnigmaText(), secondPartClear);
         }
@@ -110,19 +110,19 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         [TestMethod]
         public void TestU264KapitänleutnantHartwigLooks1942()
         {
-            var enigma = EnigmaFactory.CreateEnigma(new[] { RotorType.Beta, RotorType.II, RotorType.IV, RotorType.I }, new[] { 1, 1, 1, 22 }, ReflectorType.ThinB, new Plugboard("AT BL DF GJ HM NW OP QY RZ VX"));
+            var enigma = EnigmaFactory.CreateEnigma([RotorType.Beta, RotorType.II, RotorType.IV, RotorType.I], [1, 1, 1, 22], ReflectorType.ThinB, new Plugboard("AT BL DF GJ HM NW OP QY RZ VX"));
 
-            Trace.WriteLine($"enigma: {enigma}");
+            Log.Information("enigma: {Enigma}", enigma);
 
             var cipher = "NCZW VUSX PNYM INHZ XMQX SFWX WLKJ AHSH NMCO CCAK UQPM KCSM HKSE INJU SBLK IOSX CKUB HMLL XCSJ USRR DVKO HULX WCCB GVLI YXEO AHXR HKKF VDRE WEZL XOBA FGYU JQUK GRTV UKAM EURB VEKS UHHV OYHA BCJW MAKL FKLM YFVN RIZR VVRT KOFD ANJM OLBG FFLE OPRG TFLV RHOW OPBE KVWM UQFM PWPA RMFH AGKX IIBG";
 
-            Trace.WriteLine($"cipher: {cipher}");
+            Log.Information("cipher: {Cipher}", cipher);
 
-            enigma.SetStartPositions(new[] { 'V', 'J', 'N', 'A' });
+            enigma.SetStartPositions(['V', 'J', 'N', 'A']);
 
             var clear = enigma.Transform(cipher.ToEnigmaText());
 
-            Trace.WriteLine($"clear: {clear}");
+            Log.Information("clear: {Clear}", clear);
 
             Assert.AreEqual("vonvonjlooksjhffttteinseinsdreizwoyyqnnsneuninhaltxxbeiangriffunterwassergedruecktywabosxletztergegnerstandnulachtdreinuluhrmarquantonjotaneunachtseyhsdreiyzwozwonulgradyachtsmystossenachxeknsviermbfaelltynnnnnnooovierysichteinsnull".ToEnigmaText(), clear);
         }
@@ -131,12 +131,12 @@ namespace net.SicTransit.Crypto.Enigma.Tests
         public void TestArchivedGeocacheGC2NC68()
         {
             var enigma = EnigmaFactory.CreateEnigma(
-                new[] { RotorType.VIII, RotorType.VII, RotorType.II },
-                new[] { 1, 19, 25 },
+                [RotorType.VIII, RotorType.VII, RotorType.II],
+                [1, 19, 25],
                 ReflectorType.B,
                 new Plugboard("AS BK DU EZ FO HN IX LV QY RW"));
 
-            Trace.WriteLine($"enigma: {enigma}");
+            Log.Information("enigma: {Enigma}", enigma);
 
             var cipherText = "OSVKA IYZML IIGEN HCAVF RUBSC INRPS YBEQB KPWCX CMZHO KONZM RGOCP TZNBL ALERX ZTVAR WEPUO FRVZI GYZXL WVLXE YXIKJ FDPLD RHFAB EANKJ FWWOB NKFPO RLUUU";
 
@@ -152,7 +152,7 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                 {
                     for (int k = 0; k < 26; k++)
                     {
-                        enigma.SetStartPositions(new[] { (char)('A' + i), (char)('A' + j), (char)('A' + k) });
+                        enigma.SetStartPositions([(char)('A' + i), (char)('A' + j), (char)('A' + k)]);
 
                         var clearText = enigma.Transform(cipherText.ToEnigmaText());
 
@@ -163,13 +163,13 @@ namespace net.SicTransit.Crypto.Enigma.Tests
                             result = clearText;
                             maxIC = ic;
 
-                            Trace.WriteLine($"{sw.Elapsed} [start: {new string(enigma.StartPositions)}]: (IC={ic:F6} {clearText}");
+                            Log.Information("{Elapsed} [start: {StartPositions}]: (IC={IC:F6} {ClearText}", sw.Elapsed, new string(enigma.StartPositions), ic, clearText);
                         }
                     }
                 }
             }
 
-            Assert.IsTrue(result.Contains("NORTHFIVE"));
+            Assert.Contains("NORTHFIVE", result);
         }
 
         [TestMethod]
@@ -182,22 +182,19 @@ namespace net.SicTransit.Crypto.Enigma.Tests
             var cipherText = Encoding.UTF8.GetString(Convert.FromBase64String("OTcwODQwNzk4NzgwMDU="));
 
             var reflector = new Reflector("X(A)", Encoding.UTF8.GetString(Convert.FromBase64String("ODc2NTQzMjEwOQ==")), "1234567890");
-            var rotor1 = new Rotor("R(I)", Encoding.UTF8.GetString(Convert.FromBase64String("NzYyMzAxOTQ4NQ==")), new[] { '4' }, 1, "1234567890", false);
-            var rotor2 = new Rotor("R(II)", Encoding.UTF8.GetString(Convert.FromBase64String("NTY0MjA3MzkxOA==")), new[] { '0' }, 1, "1234567890", false);
-            var rotor3 = new Rotor("R(III)", Encoding.UTF8.GetString(Convert.FromBase64String("NDEyNzkwNTYzOA==")), new[] { '4' }, 1, "1234567890", false);
+            var rotor1 = new Rotor("R(I)", Encoding.UTF8.GetString(Convert.FromBase64String("NzYyMzAxOTQ4NQ==")), ['4'], 1, "1234567890", false);
+            var rotor2 = new Rotor("R(II)", Encoding.UTF8.GetString(Convert.FromBase64String("NTY0MjA3MzkxOA==")), ['0'], 1, "1234567890", false);
+            var rotor3 = new Rotor("R(III)", Encoding.UTF8.GetString(Convert.FromBase64String("NDEyNzkwNTYzOA==")), ['4'], 1, "1234567890", false);
 
-            var enigma = new Enigma(reflector, new[] { rotor1, rotor2, rotor3 }, new Plugboard());
+            var enigma = new Enigma(reflector, [rotor1, rotor2, rotor3], new Plugboard());
 
-            enigma.SetStartPositions(new[] { '2', '0', '0' });
-
-            Log.Information($"{enigma}");
+            enigma.SetStartPositions(['2', '0', '0']);            
 
             var clearText = enigma.Transform(cipherText);
 
             Assert.IsTrue(crib.IsMatch(clearText));
 
-            Log.Information($"→ {clearText}");
-            Log.Information($"{enigma}");
+            Log.Information("{Enigma} → {ClearText}", enigma, clearText);            
         }
     }
 }
