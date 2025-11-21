@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>net.SicTransit.Crypto.Enigma</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
