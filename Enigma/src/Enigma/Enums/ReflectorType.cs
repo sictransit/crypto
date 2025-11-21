@@ -1,12 +1,11 @@
-﻿namespace net.SicTransit.Crypto.Enigma.Enums
+﻿namespace net.SicTransit.Crypto.Enigma.Enums;
+
+public enum ReflectorType
 {
-    public enum ReflectorType
-    {
-        A,
-        B,
-        ThinB,
-        C,
-        ThinC,
-        ETW
-    }
+    A,
+    B,
+    ThinB,
+    C,
+    ThinC,
+    ETW
 }

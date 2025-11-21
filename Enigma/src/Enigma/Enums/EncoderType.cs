@@ -1,11 +1,10 @@
-﻿namespace net.SicTransit.Crypto.Enigma.Enums
+﻿namespace net.SicTransit.Crypto.Enigma.Enums;
+
+public enum EncoderType
 {
-    public enum EncoderType
-    {
-        Keyboard,
-        Lampboard,
-        Plugboard,
-        Rotor,
-        Reflector
-    }
+    Keyboard,
+    Lampboard,
+    Plugboard,
+    Rotor,
+    Reflector
 }

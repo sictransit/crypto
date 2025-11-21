@@ -2,63 +2,62 @@
 using Serilog;
 using System;
 
-namespace net.SicTransit.Crypto.Enigma.Abstract
+namespace net.SicTransit.Crypto.Enigma.Abstract;
+
+public abstract class EnigmaDevice
 {
-    public abstract class EnigmaDevice
+    protected readonly bool debugging;
+
+    public EnigmaDevice()
     {
-        protected readonly bool debugging;
+        debugging = Log.IsEnabled(Serilog.Events.LogEventLevel.Debug);
+    }
 
-        public EnigmaDevice()
+    protected EnigmaDevice ForwardDevice { get; private set; }
+
+    protected EnigmaDevice ReverseDevice { get; private set; }
+
+    public abstract EncoderType EncoderType { get; }
+
+    public virtual string Name => EncoderType.ToString();
+
+    public virtual void Transpose(char c, Direction direction)
+    {
+        switch (direction)
         {
-            debugging = Log.IsEnabled(Serilog.Events.LogEventLevel.Debug);
+            case Direction.Forward:
+                ForwardDevice?.Transpose(c, direction);
+                break;
+            case Direction.Reverse:
+                ReverseDevice?.Transpose(c, direction);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
+    }
 
-        protected EnigmaDevice ForwardDevice { get; private set; }
-
-        protected EnigmaDevice ReverseDevice { get; private set; }
-
-        public abstract EncoderType EncoderType { get; }
-
-        public virtual string Name => EncoderType.ToString();
-
-        public virtual void Transpose(char c, Direction direction)
+    public virtual void Attach(EnigmaDevice e, Direction direction)
+    {
+        switch (direction)
         {
-            switch (direction)
-            {
-                case Direction.Forward:
-                    ForwardDevice?.Transpose(c, direction);
-                    break;
-                case Direction.Reverse:
-                    ReverseDevice?.Transpose(c, direction);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-            }
+            case Direction.Forward:
+                ForwardDevice = e;
+                break;
+            case Direction.Reverse:
+                ReverseDevice = e;
+                break;
+            default:
+                throw new NotImplementedException(direction.ToString());
         }
+    }
 
-        public virtual void Attach(EnigmaDevice e, Direction direction)
-        {
-            switch (direction)
-            {
-                case Direction.Forward:
-                    ForwardDevice = e;
-                    break;
-                case Direction.Reverse:
-                    ReverseDevice = e;
-                    break;
-                default:
-                    throw new NotImplementedException(direction.ToString());
-            }
-        }
+    public virtual void Tick(bool turn = false)
+    {
+        ForwardDevice?.Tick(turn);
+    }
 
-        public virtual void Tick(bool turn = false)
-        {
-            ForwardDevice?.Tick(turn);
-        }
-
-        public override string ToString()
-        {
-            return $"{Name}";
-        }
+    public override string ToString()
+    {
+        return $"{Name}";
     }
 }
