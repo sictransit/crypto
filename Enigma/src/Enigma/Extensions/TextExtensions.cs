@@ -16,7 +16,7 @@ namespace net.SicTransit.Crypto.Enigma.Extensions
 
         public static string GroupedBy(this string s, int length = 5)
         {
-            return string.Join(' ', s.ChunkBy(length).Select(x => new string(x.ToArray())));
+            return string.Join(' ', s.Chunk(length).Select(x => new string(x.ToArray())));
         }
     }
 }

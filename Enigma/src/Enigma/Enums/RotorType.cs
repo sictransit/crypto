@@ -1,16 +1,15 @@
-﻿namespace net.SicTransit.Crypto.Enigma.Enums
+﻿namespace net.SicTransit.Crypto.Enigma.Enums;
+
+public enum RotorType
 {
-    public enum RotorType
-    {
-        I,
-        II,
-        III,
-        IV,
-        V,
-        VI,
-        VII,
-        VIII,
-        Beta,
-        Gamma
-    }
+    I,
+    II,
+    III,
+    IV,
+    V,
+    VI,
+    VII,
+    VIII,
+    Beta,
+    Gamma
 }

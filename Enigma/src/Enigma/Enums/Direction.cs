@@ -1,8 +1,7 @@
-﻿namespace net.SicTransit.Crypto.Enigma.Enums
+﻿namespace net.SicTransit.Crypto.Enigma.Enums;
+
+public enum Direction
 {
-    public enum Direction
-    {
-        Forward,
-        Reverse
-    }
+    Forward,
+    Reverse
 }

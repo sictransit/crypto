@@ -188,13 +188,13 @@ namespace net.SicTransit.Crypto.Enigma.Tests
 
             var enigma = new Enigma(reflector, [rotor1, rotor2, rotor3], new Plugboard());
 
-            enigma.SetStartPositions(['2', '0', '0']);            
+            enigma.SetStartPositions(['2', '0', '0']);
 
             var clearText = enigma.Transform(cipherText);
 
             Assert.IsTrue(crib.IsMatch(clearText));
 
-            Log.Information("{Enigma} → {ClearText}", enigma, clearText);            
+            Log.Information("{Enigma} → {ClearText}", enigma, clearText);
         }
     }
 }
