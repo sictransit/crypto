@@ -71,7 +71,7 @@ While we're poisoning pigeons in the park
                                 for (int s3 = 0; s3 < 26; s3++)
                                 {
 
-                                    enigma.SetStartPositions([(char) ('A' + s1), (char) ('A' + s2), (char) ('A' + s3)]);
+                                    enigma.SetStartPositions([(char)('A' + s1), (char)('A' + s2), (char)('A' + s3)]);
 
                                     var clearText = enigma.Transform(cipherText);
                                     var ic = clearText.IndexOfCoincidence();
